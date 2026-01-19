@@ -1,20 +1,37 @@
-const express= require ('express');
-const mongoose=require ('mongoose');
+const express=require('express');
+const mongoose=require('mongoose');
 const cors=require('cors');
 require('dotenv').config();
 
 const app=express();
+const subscriptionRoutes=require('./routes/subscriptionRoutes');
 
-//middleware
 app.use(cors());
 app.use(express.json());
 
-//health api
-app.get('/',(req,res)=>res.send('API is running...'));
+app.use('/api/subscriptions', subscriptionRoutes);
 
-const PORT=process.env.PORT || 5000;
-app.listen(PORT,()=>console.log(`Server is running on PORT ${PORT}`))
+app.get('/',(req,res)=>{
+    res.status(200).send('API is running...');
+});
 
-mongoose.connect(process.env.MONGODB_URL)
-.then(()=>console.log("MongoDB connected"))
-.catch((err)=>console.log('MongoDB conn error:',err));
+const PORT = process.env.PORT || 8080;
+
+const MONGO_URI= process.env.MONGODB_URL;
+
+mongoose.connect(MONGO_URI)
+.then(()=>{
+    console.log("MongoDB connected");
+    app.listen(PORT,'0.0.0.0', ()=>{
+console.log(`Serveris running on PORT ${PORT}`)
+    });
+})
+.catch((err)=>{
+    console.log('MongoDB connection failed');
+    console.log(err);
+})
+
+app.use((err,req, res, next) => {
+    console.err(err.stack);
+    req.status(500).send('Something broke!');
+})

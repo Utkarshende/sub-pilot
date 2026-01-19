@@ -1,23 +1,27 @@
-const mongoose=require('mongoose');
+const mongoose = require('mongoose');
 
-const subscriptionSchema=new mongoose.Schema({
-    name:{
-        type:String,
-        required:[true,'Please add name'],
-        trim:true,
+// Define the Blueprint
+const subscriptionSchema = new mongoose.Schema({
+    name: { 
+        type: String, 
+        required: [true, 'Please provide the subscription name'], 
+        trim: true 
     },
-    amount:{
-type:String,
-required:[true,'Please add amount']
+    amount: { 
+        type: Number, 
+        required: [true, 'Please provide the monthly cost'] 
     },
-    category:{
-        type:String,
-        required:true,
-        enum:['Entertainment','Education','Productivity','Health','Other'],
+    category: { 
+        type: String, 
+        required: true,
+        enum: ['Entertainment', 'Utilities', 'Work', 'Food', 'Other'],
+        default: 'Other'
     },
-    date : {
-        type:date,
-        default:Date.now
+    date: { 
+        type: Date, 
+        default: Date.now 
     }
-});
-module.exports= mongoose.model ('Subscription',subscriptionschema);
+}, { timestamps: true }); // Adds createdAt and updatedAt automatically
+
+// Export the Model
+module.exports = mongoose.model('Subscription', subscriptionSchema);
