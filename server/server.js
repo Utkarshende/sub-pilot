@@ -1,38 +1,17 @@
-const express=require('express');
-const mongoose=require('mongoose');
-const cors=require('cors');
-require('dotenv').config();
+const express = require('express');
+const mongoose = require('mongoose');
+const cors = require('cors');
+const subRoutes = require('./routes/subRoutes');
 
-const app=express();
+const app = express();
 app.use(cors());
-
-const subscriptionRoutes=require('./routes/subscriptionRoutes');
-
 app.use(express.json());
 
-app.use('/api/subscriptions', subscriptionRoutes);
+// Connect Routes
+app.use('/api/subscriptions', subRoutes);
 
-app.get('/',(req,res)=>{
-    res.status(200).send('API is running...');
-});
+mongoose.connect('your_mongodb_url')
+    .then(() => console.log("DB Connected"))
+    .catch(err => console.log(err));
 
-const PORT = process.env.PORT || 8080;
-
-const MONGO_URI= process.env.MONGODB_URL;
-
-mongoose.connect(MONGO_URI)
-.then(()=>{
-    console.log("MongoDB connected");
-    app.listen(PORT,'0.0.0.0', ()=>{
-console.log(`Serveris running on PORT ${PORT}`)
-    });
-})
-.catch((err)=>{
-    console.log('MongoDB connection failed');
-    console.log(err);
-})
-
-app.use((err,req, res, next) => {
-    console.err(err.stack);
-    req.status(500).send('Something broke!');
-})
+app.listen(8080, () => console.log("Server running on 8080"));
