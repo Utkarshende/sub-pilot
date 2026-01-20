@@ -35,11 +35,22 @@ function App() {
     }
   };
 
+  const totalMonthly=subscriptions.reduce((sum,sub)=>{
+    return sum + Number(sub.amount);},0)
+
   return (
     <div className="min-h-screen bg-gray-100 p-8">
       <div className="max-w-2xl mx-auto">
-        <h1 className="text-3xl font-bold text-center mb-8">SubPilot Tracker</h1>
         
+        <h1 className="text-3xl font-bold text-center mb-8">SubPilot Tracker</h1>
+        <div className='bg-blue-600 text-whitep-6 rounded-xl shadow-lg mb-8 '>
+          <h1 className='text-lg '>
+            Total Monthly Spend
+          </h1>
+          <p className='text-5xl font-bold mt-2'>
+            ${totalMonthly.toFixed(2)}
+          </p>
+        </div>
         {/* Pass the Action to the Component via Props */}
         <SubscriptionForm onAdd={handleAddSubscription} />
 

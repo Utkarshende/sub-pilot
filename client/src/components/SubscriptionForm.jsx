@@ -29,6 +29,8 @@ console.log("The type of setFormData is:", typeof setFormData);
         // Reset the form so the user can add another one
         setFormData({ name: '', amount: '', category: 'Entertainment' });
     };
+   
+
 
     return (
         <form onSubmit={handleSubmit} className="bg-white p-6 rounded-xl shadow-lg space-y-4 border border-gray-100">
