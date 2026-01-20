@@ -33,7 +33,7 @@ router.post('/', async (req, res) => {
     }
 });
 
-router.delete(':id',async(req,res)=>{
+router.delete('/:id',async(req,res)=>{
     try{
         const response= await Subscription.findByIdAndDelete(req.params.id);
         res.status(200).json({message:"Delete Successfully"});
@@ -42,6 +42,21 @@ router.delete(':id',async(req,res)=>{
 response.status(500).json({message: error.message});
 }
 })
+ router.put("/:id",async (req,res)=>{
+try{
+    const updatedSub= await Subscription.findByIdAndUpdate(
+        req.params.id,
+        req.body,
+        {req:true}
+    );
+    res.status(200).json(updatedSub);
+}
+catch(error){
+    res.status(400).json({message : error.message})
+}
+ })
+
+
 
 // IMPORTANT: Do not forget this line!
 module.exports = router;
