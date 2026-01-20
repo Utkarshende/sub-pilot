@@ -1,7 +1,10 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
-const subRoutes = require('./routes/subRoutes');
+require('dotenv').config();
+
+const subRoutes = require('./routes/subscriptionRoutes');
+
 
 const app = express();
 app.use(cors());
@@ -10,7 +13,7 @@ app.use(express.json());
 // Connect Routes
 app.use('/api/subscriptions', subRoutes);
 
-mongoose.connect('your_mongodb_url')
+mongoose.connect(process.env.MONGO_URL)
     .then(() => console.log("DB Connected"))
     .catch(err => console.log(err));
 
