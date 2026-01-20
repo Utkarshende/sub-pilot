@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import SubscriptionForm from './components/SubscriptionForm';
+import Stats from './components/Stats'
 
 function App() {
   // 1. STATE: The Application Memory
@@ -74,6 +75,32 @@ const categoryData=subscriptions.reduce((acc,sub)=>{
   return (
     <div className="min-h-screen bg-gray-100 p-8">
       <div className="max-w-2xl mx-auto">
+        {/* BUDGET SECTION */}
+    <div className="bg-white p-6 rounded-xl shadow-md mb-6">
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="font-bold text-gray-700 text-lg">Monthly Budget</h2>
+        <input 
+          type="number" 
+          value={budget} 
+          onChange={(e) => setBudget(Number(e.target.value))}
+          className="w-24 border-b-2 border-blue-500 text-right font-bold text-xl outline-none"
+        />
+      </div>
+      
+      {/* PROGRESS BAR */}
+      <div className="w-full bg-gray-200 rounded-full h-4 overflow-hidden">
+        <div 
+          className={`h-full transition-all duration-500 ${percentUsed > 90 ? 'bg-red-500' : 'bg-green-500'}`} 
+          style={{ width: `${Math.min(percentUsed, 100)}%` }}
+        ></div>
+      </div>
+      <p className="mt-2 text-sm text-gray-500 text-right">
+        {percentUsed.toFixed(1)}% of budget used
+      </p>
+    </div>
+
+    {/* SHOW CHART */}
+    <Stats subscriptions={subscriptions} />
         
         <h1 className="text-3xl font-bold text-center mb-8 text-gray-800">SubPilot Tracker</h1>
         <div className="bg-white p-4 rounded-lg shadow mb-6 flex justify-between items-center">
