@@ -1,17 +1,7 @@
-import React from 'react';
-import { createRoot } from 'react-dom/client'; // Notice the change here
-import { BrowserRouter } from 'react-router-dom'; // Our "GPS" for pages
-import App from './App';
-import './index.css';
+import { createRoot } from 'react-dom/client'
+import './index.css'
+import App from './App.jsx'
 
-// We get the 'root' div from your index.html
-const container = document.getElementById('root');
-const root = createRoot(container);
-
-root.render(
-  <React.StrictMode>
-    <BrowserRouter>
-      <App />
-    </BrowserRouter>
-  </React.StrictMode>
-);
+createRoot(document.getElementById('root')).render(
+    <App />
+)

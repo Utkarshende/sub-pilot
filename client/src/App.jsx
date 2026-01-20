@@ -1,105 +1,68 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Routes, Route, Link, useNavigate } from 'react-router-dom';
-
-// Import Pages
-import Home from './pages/Home';
-import Login from './pages/Login';
-import Signup from './pages/Signup';
-import Stats from './components/Stats';
 import SubscriptionForm from './components/SubscriptionForm';
 
 function App() {
+  // 1. STATE: The Application Memory
   const [subscriptions, setSubscriptions] = useState([]);
-  const [editingSub, setEditingSub] = useState(null);
-  const [budget, setBudget] = useState(50000);
-  const [user, setUser] = useState(null); // NULL means logged out
-  const navigate = useNavigate();
 
-  // 1. DATA LOGIC (Keep this as is)
+  // 2. ACTION: Fetching data from Database (GET)
   const fetchSubscriptions = async () => {
     try {
       const response = await axios.get('http://localhost:8080/api/subscriptions');
       setSubscriptions(response.data);
-    } catch (error) { console.error(error); }
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
   };
 
+  // 3. EFFECT: Run fetch when the page first loads
   useEffect(() => {
-    if (user) fetchSubscriptions();
-  }, [user]);
+    fetchSubscriptions();
+  }, []);
 
-  // 2. LOGOUT LOGIC
-  const handleLogout = () => {
-    setUser(null);
-    navigate('/');
+  // 4. ACTION: Sending new data to Database (POST)
+  const handleAddSubscription = async (formData) => {
+    try {
+      const response = await axios.post('http://localhost:8080/api/subscriptions', formData);
+      
+      // Update UI immediately by adding the new item to our list
+      setSubscriptions([...subscriptions, response.data]);
+      alert("Subscription Added!");
+    } catch (error) {
+      console.error("Error adding subscription:", error);
+      alert("Failed to add to database.");
+    }
   };
 
-  // 3. CALCULATIONS
-  const totalMonthly = subscriptions.reduce((sum, sub) => sum + Number(sub.amount), 0);
-  const percentUsed = (totalMonthly / budget) * 100;
+  const totalMonthly=subscriptions.reduce((sum,sub)=>{
+    return sum + Number(sub.amount);},0)
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* NAVIGATION BAR */}
-      <nav className="bg-white shadow-sm p-4 sticky top-0 z-10">
-        <div className="max-w-5xl mx-auto flex justify-between items-center">
-          <Link to="/" className="text-2xl font-black text-blue-600">SubPilot</Link>
-          <div className="flex gap-6 items-center font-bold text-gray-600">
-            {user ? (
-              <>
-                <Link to="/dashboard" className="hover:text-blue-600">Dashboard</Link>
-                <Link to="/stats" className="hover:text-blue-600">Stats</Link>
-                <button onClick={handleLogout} className="bg-red-50 text-red-600 px-4 py-2 rounded-lg">Logout</button>
-              </>
-            ) : (
-              <>
-                <Link to="/login" className="hover:text-blue-600">Login</Link>
-                <Link to="/signup" className="bg-blue-600 text-white px-4 py-2 rounded-lg">Join Free</Link>
-              </>
-            )}
-          </div>
+    <div className="min-h-screen bg-gray-100 p-8">
+      <div className="max-w-2xl mx-auto">
+        
+        <h1 className="text-3xl font-bold text-center mb-8">SubPilot Tracker</h1>
+        <div className='bg-blue-600 text-whitep-6 rounded-xl shadow-lg mb-8 '>
+          <h1 className='text-lg '>
+            Total Monthly Spend
+          </h1>
+          <p className='text-5xl font-bold mt-2'>
+            ${totalMonthly.toFixed(2)}
+          </p>
         </div>
-      </nav>
+        {/* Pass the Action to the Component via Props */}
+        <SubscriptionForm onAdd={handleAddSubscription} />
 
-      <div className="max-w-4xl mx-auto p-6">
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/login" element={<Login setUser={setUser} />} />
-          <Route path="/signup" element={<Signup />} />
-
-          {/* DASHBOARD ROUTE */}
-          <Route path="/dashboard" element={
-            user ? (
-              <div className="space-y-8">
-                {/* Budget Tracker */}
-                <div className="bg-white p-6 rounded-2xl shadow-sm border">
-                  <div className="flex justify-between items-center mb-4">
-                    <h2 className="font-bold text-xl">Monthly Budget</h2>
-                    <input type="number" value={budget} onChange={(e) => setBudget(e.target.value)} className="w-32 border-b-2 border-blue-600 text-right font-bold text-xl outline-none" />
-                  </div>
-                  <div className="w-full bg-gray-100 h-4 rounded-full overflow-hidden">
-                    <div className={`h-full ${percentUsed > 90 ? 'bg-red-500' : 'bg-green-500'}`} style={{ width: `${Math.min(percentUsed, 100)}%` }}></div>
-                  </div>
-                </div>
-
-                <SubscriptionForm onAdd={(data) => setSubscriptions([...subscriptions, data])} />
-                
-                {/* List View */}
-                <div className="grid gap-4">
-                  {subscriptions.map(sub => (
-                    <div key={sub._id} className="bg-white p-4 rounded-xl shadow-sm border flex justify-between">
-                      <div><p className="font-bold">{sub.name}</p><p className="text-blue-600">₹{sub.amount}</p></div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            ) : (
-              <div className="text-center py-20">Please Login to view Dashboard</div>
-            )
-          } />
-
-          <Route path="/stats" element={user ? <Stats subscriptions={subscriptions} /> : <Login setUser={setUser} />} />
-        </Routes>
+        {/* Display the List */}
+        <div className="mt-8 space-y-4">
+          {subscriptions.map((sub) => (
+            <div key={sub._id} className="bg-white p-4 rounded shadow flex justify-between">
+              <span className="font-bold">{sub.name}</span>
+              <span className="text-blue-600">₹{sub.amount}</span>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );
