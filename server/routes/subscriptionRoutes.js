@@ -2,8 +2,6 @@ const express = require('express');
 const router = express.Router();
 const Subscription = require('../models/Subscription'); // Capital 'S' for Model
 
-// @route   GET /api/subscriptions
-// @desc    Get all subscriptions
 router.get('/', async (req, res) => {
     try {
         const subs = await Subscription.find().sort({ date: -1 }); // Newest first
@@ -13,8 +11,7 @@ router.get('/', async (req, res) => {
     }
 });
 
-// @route   POST /api/subscriptions
-// @desc    Create a new subscription
+
 router.post('/', async (req, res) => {
     try {
         const { name, amount, category } = req.body;
