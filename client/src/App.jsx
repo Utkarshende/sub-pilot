@@ -1,70 +1,99 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import SubscriptionForm from './components/SubscriptionForm';
+import axiosInstance from './api/axiosInstance'; // Logic: Uses our custom interceptor
+import { API_URLS, ALERT_MESSAGES, ALERT_TYPES } from './constants/index.js'; // Logic: Centralized strings
+import MainLayout from './components/layout/MainLayout';
+import SubscriptionList from './components/dashboard/SubscriptionList';
+import AddSubForm from './components/dashboard/AddSubForm';
+import Toast from './components/ui/Toast';
 
 function App() {
-  // 1. STATE: The Application Memory
   const [subscriptions, setSubscriptions] = useState([]);
+  const [toast, setToast] = useState({ show: false, message: '', type: '' });
 
-  // 2. ACTION: Fetching data from Database (GET)
+  // 1. Fetch Logic
   const fetchSubscriptions = async () => {
     try {
-      const response = await axios.get('http://localhost:8080/api/subscriptions');
+      // Logic: Path is relative because axiosInstance has the BaseURL
+      const response = await axiosInstance.get(API_URLS.SUBS); 
       setSubscriptions(response.data);
     } catch (error) {
-      console.error("Error fetching data:", error);
+      showToast(ALERT_MESSAGES.ERROR_FETCH, ALERT_TYPES.ERROR);
     }
   };
 
-  // 3. EFFECT: Run fetch when the page first loads
   useEffect(() => {
     fetchSubscriptions();
   }, []);
 
-  // 4. ACTION: Sending new data to Database (POST)
+  // 2. Add Logic
   const handleAddSubscription = async (formData) => {
     try {
-      const response = await axios.post('http://localhost:8080/api/subscriptions', formData);
-      
-      // Update UI immediately by adding the new item to our list
+      const response = await axiosInstance.post(API_URLS.SUBS, formData);
       setSubscriptions([...subscriptions, response.data]);
-      alert("Subscription Added!");
+      showToast(ALERT_MESSAGES.SUCCESS_ADD, ALERT_TYPES.SUCCESS);
     } catch (error) {
-      console.error("Error adding subscription:", error);
-      alert("Failed to add to database.");
+      showToast(ALERT_MESSAGES.ERROR_SAVE, ALERT_TYPES.ERROR);
     }
   };
 
-  const totalMonthly=subscriptions.reduce((sum,sub)=>{
-    return sum + Number(sub.amount);},0)
+  const handleDeleteSubscription = async (id) => {
+  // Logic: Optimistic UI update or wait for server? 
+  // Let's wait for server to ensure data integrity.
+  try {
+    await axiosInstance.delete(`${API_URLS.SUBS}/${id}`);
+    
+    // Logic: Remove the deleted item from the local state array
+    setSubscriptions(subscriptions.filter(sub => sub._id !== id));
+    
+    showToast(ALERT_MESSAGES.SUCCESS_DELETE, ALERT_TYPES.SUCCESS);
+  } catch (error) {
+    showToast(ALERT_MESSAGES.ERROR_DELETE, ALERT_TYPES.ERROR);
+  }
+};
+
+  // 3. Helper for Notifications
+  const showToast = (message, type) => {
+    setToast({ show: true, message, type });
+  };
+
+  // 4. Calculation Logic
+  const totalMonthly = subscriptions.reduce((sum, sub) => sum + Number(sub.amount), 0);
 
   return (
-    <div className="min-h-screen bg-gray-100 p-8">
-      <div className="max-w-2xl mx-auto">
+    <MainLayout> {/* Logic: Provides Sidebar & Navbar automatically */}
+      <div className="max-w-4xl mx-auto space-y-8">
         
-        <h1 className="text-3xl font-bold text-center mb-8">SubPilot Tracker</h1>
-        <div className='bg-blue-600 text-whitep-6 rounded-xl shadow-lg mb-8 '>
-          <h1 className='text-lg '>
+        {/* Stats Section */}
+        <div className='bg-blue-600 text-white p-8 rounded-2xl shadow-lg'>
+          <h1 className='text-blue-100 text-sm font-medium uppercase tracking-wider'>
             Total Monthly Spend
           </h1>
           <p className='text-5xl font-bold mt-2'>
-            ${totalMonthly.toFixed(2)}
+            ₹{totalMonthly.toLocaleString()}
           </p>
         </div>
-        {/* Pass the Action to the Component via Props */}
-        <SubscriptionForm onAdd={handleAddSubscription} />
 
-        {/* Display the List */}
-        <div className="mt-8 space-y-4">
-          {subscriptions.map((sub) => (
-            <div key={sub._id} className="bg-white p-4 rounded shadow flex justify-between">
-              <span className="font-bold">{sub.name}</span>
-              <span className="text-blue-600">₹{sub.amount}</span>
-            </div>
-          ))}
+        <div className="grid md:grid-cols-2 gap-8">
+           {/* Components are now modular and clean */}
+           <div className="bg-white p-6 rounded-2xl border shadow-sm">
+             <h2 className="text-xl font-bold mb-4">Add Subscription</h2>
+             <AddSubForm onSave={handleAddSubscription} />
+           </div>
+
+           <SubscriptionList 
+             subscriptions={subscriptions} 
+onDelete={handleDeleteSubscription}           />
         </div>
       </div>
-    </div>
+
+      {toast.show && (
+        <Toast 
+          message={toast.message} 
+          type={toast.type} 
+          onClose={() => setToast({ ...toast, show: false })} 
+        />
+      )}
+    </MainLayout>
   );
 }
 
