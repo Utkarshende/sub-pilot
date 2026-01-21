@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { PlusCircle, Save } from 'lucide-react';
 
-// 1. FIXED: Added editingSub and onUpdate to the props
 const SubscriptionForm = ({ onAdd, editingSub, onUpdate }) => {
     const [formData, setFormData] = useState({
         name: '',
@@ -9,7 +8,6 @@ const SubscriptionForm = ({ onAdd, editingSub, onUpdate }) => {
         category: 'Entertainment'
     });
 
-    // 2. EFFECT: This watches for when the "Edit" button is clicked in App.jsx
     useEffect(() => {
         if (editingSub) {
             setFormData({
