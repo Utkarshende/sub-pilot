@@ -1,38 +1,20 @@
-const express=require('express');
-const mongoose=require('mongoose');
-const cors=require('cors');
-require('dotenv').config();
+import express from 'express';
+import dotenv from 'dotenv';
+import cors from 'cors';
+import connectDB from './config/db.js';
+import userLink from './routes/userRoutes.js';
 
-const app=express();
-app.use(cors());
+dotenv.config(); // Load .env file
+connectDB();    // Connect to MongoDB
 
-const subscriptionRoutes=require('./routes/subscriptionRoutes');
+const app = express();
 
-app.use(express.json());
+// MIDDLEWARE
+app.use(cors()); // Logic: Allows cross-origin requests from Frontend
+app.use(express.json()); // Logic: Allows server to read JSON bodies
 
-app.use('/api/subscriptions', subscriptionRoutes);
-
-app.get('/',(req,res)=>{
-    res.status(200).send('API is running...');
-});
+// ROUTES
+app.use('/api/users', userLink);
 
 const PORT = process.env.PORT || 8080;
-
-const MONGO_URI= process.env.MONGODB_URL;
-
-mongoose.connect(MONGO_URI)
-.then(()=>{
-    console.log("MongoDB connected");
-    app.listen(PORT,'0.0.0.0', ()=>{
-console.log(`Serveris running on PORT ${PORT}`)
-    });
-})
-.catch((err)=>{
-    console.log('MongoDB connection failed');
-    console.log(err);
-})
-
-app.use((err,req, res, next) => {
-    console.err(err.stack);
-    req.status(500).send('Something broke!');
-})
+app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
