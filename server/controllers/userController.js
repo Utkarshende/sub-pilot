@@ -23,6 +23,7 @@ export const userRegister = async (req, res) => {
     const token = createToken(user._id);
     res.status(201).json({ token, user: { id: user._id, name: user.name, email: user.email } });
   } catch (err) {
+    console.error("DETAILED ERROR:", err); // This will print the real reason in your terminal
     res.status(500).json({ message: "Server Error" });
   }
 };
