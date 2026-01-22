@@ -5,6 +5,7 @@ export const API_URLS = {
   SUBS: "/subscriptions",
 };
 
+
 export const BUDGET_KEY = 'user_monthly_budget';
 export const CHART_COLORS = [
   '#4F46E5', // Indigo

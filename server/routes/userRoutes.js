@@ -1,10 +1,11 @@
-import express from "express";
-import { userRegister, userLogin } from "../controllers/userController.js";
-
+// server/routes/userRoutes.js
+import express from 'express';
 const router = express.Router();
+import { getProfile, updateProfile } from '../controllers/userController.js';
+import { protect } from '../middleware/authMiddleware.js'; // Ensure user is logged in
 
-// LOGIC: Linking the URL path to the Controller function
-router.post("/register", userRegister);
-router.post("/login", userLogin);
+// This creates the endpoint: GET /api/users/profile
+router.get('/profile', protect, getProfile);
+router.put('/profile', protect, updateProfile);
 
-export default router;
+export default router;a

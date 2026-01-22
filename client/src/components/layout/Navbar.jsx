@@ -18,7 +18,7 @@ function Navbar({ totalSpent = 0 }) {
             <Link to="/" className={`text-sm font-semibold transition ${location.pathname === '/' ? 'text-indigo-600' : 'text-slate-400 hover:text-slate-600'}`}>Home</Link>
             <Link to="/dashboard" className={`text-sm font-semibold transition ${location.pathname === '/dashboard' ? 'text-indigo-600' : 'text-slate-400 hover:text-slate-600'}`}>Dashboard</Link>
           <Link to="/profile" className="w-10 h-10 rounded-full bg-indigo-50 flex items-center justify-center text-indigo-600 font-bold border border-indigo-100 hover:scale-105 transition shadow-sm">
-  {localStorage.getItem('user_name')?.charAt(0).toUpperCase() || 'N'}
+  {localStorage.getItem('user_name')?.charAt(0).toUpperCase() || 'SP'}
 </Link>
           </div>
         )}

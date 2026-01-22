@@ -4,7 +4,6 @@ import MainLayout from '../components/layout/MainLayout';
 import SubscriptionList from '../components/dashboard/SubscriptionList';
 import Modal from '../components/ui/Modal';
 import AddSubForm from '../components/dashboard/AddSubForm';
-import Navbar from '../components/layout/Navbar';
 import Footer from '../components/layout/Footer';
 
 function DashboardPage() {
