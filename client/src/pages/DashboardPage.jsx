@@ -10,6 +10,7 @@ import AddSubForm from '../components/dashboard/AddSubForm';
 function DashboardPage() {
   const [subscriptions, setSubscriptions] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingSub, setEditingSub] = useState(null); // Logic: Track which sub is being edited
   const [searchTerm, setSearchTerm] = useState('');
   const [isEditingBudget, setIsEditingBudget] = useState(false);
   
@@ -22,88 +23,68 @@ function DashboardPage() {
     try {
       const res = await axiosInstance.get(API_URLS.SUBS);
       setSubscriptions(res.data);
-    } catch (err) { console.error("Error fetching data:", err); }
+    } catch (err) { console.error(err); }
   };
 
   const handleSaveBudget = () => {
     setBudget(Number(tempBudget));
     localStorage.setItem(BUDGET_KEY, tempBudget);
     setIsEditingBudget(false);
+    // Logic: Force a storage event so other pages know budget changed
+    window.dispatchEvent(new Event('storage'));
   };
 
-  const filteredSubs = subscriptions.filter(s => 
-    s.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const handleEdit = (sub) => {
+    setEditingSub(sub);
+    setIsModalOpen(true);
+  };
 
-  const totalFiltered = filteredSubs.reduce((sum, s) => sum + Number(s.amount || 0), 0);
+  const filteredSubs = subscriptions.filter(s => s.name.toLowerCase().includes(searchTerm.toLowerCase()));
 
   return (
     <MainLayout>
       <div className="max-w-5xl mx-auto space-y-10">
-        {/* Header Logic */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
           <div className="space-y-2">
             <h1 className={UI_STYLES.heroText}>Dashboard</h1>
-            <div className="flex items-center space-x-3 bg-white px-4 py-2 rounded-xl border border-gray-100 shadow-sm w-fit">
-               <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Monthly Limit:</span>
+            <div className="flex items-center space-x-2 bg-white p-2 px-4 rounded-xl border border-gray-100 shadow-sm">
+               <span className="text-[10px] font-black text-gray-400 uppercase">Limit:</span>
                {isEditingBudget ? (
-                 <input 
-                   autoFocus
-                   type="number"
-                   className="w-20 font-black text-indigo-600 border-b-2 border-indigo-600 outline-none bg-transparent"
-                   value={tempBudget}
-                   onChange={(e) => setTempBudget(e.target.value)}
-                   onBlur={handleSaveBudget}
+                 <input autoFocus type="number" className="w-24 font-black text-indigo-600 outline-none" value={tempBudget}
+                   onChange={(e) => setTempBudget(e.target.value)} onBlur={handleSaveBudget} 
                    onKeyDown={(e) => e.key === 'Enter' && handleSaveBudget()}
                  />
                ) : (
-                 <button 
-                   onClick={() => setIsEditingBudget(true)}
-                   className="font-black text-gray-800 hover:text-indigo-600 transition"
-                 >
-                   ₹{budget.toLocaleString()}
-                 </button>
+                 <button onClick={() => setIsEditingBudget(true)} className="font-black text-gray-800">₹{budget.toLocaleString()}</button>
                )}
             </div>
           </div>
-          <button onClick={() => setIsModalOpen(true)} className={UI_STYLES.button}>+ Add New</button>
+          <button onClick={() => { setEditingSub(null); setIsModalOpen(true); }} className={UI_STYLES.button}>+ Add New</button>
         </div>
 
-        {/* List Section with Summary Footer */}
         <div className={UI_STYLES.card}>
-          <div className="relative mb-8">
-            <input 
-              type="text" 
-              placeholder="Search your services..." 
-              className={UI_STYLES.input}
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
+          <input type="text" placeholder="Search..." className={UI_STYLES.input} onChange={(e) => setSearchTerm(e.target.value)} />
+          <div className="mt-8">
+            <SubscriptionList 
+               subscriptions={filteredSubs} 
+               onDelete={(id) => setSubscriptions(s => s.filter(x => x._id !== id))}
+               onEdit={handleEdit} // Logic: New Edit prop
             />
           </div>
-          
-          <SubscriptionList 
-            subscriptions={filteredSubs} 
-            onDelete={(id) => setSubscriptions(s => s.filter(x => x._id !== id))} 
-          />
-
-          {/* New Filtered Summary Bar */}
-          <div className="mt-8 pt-8 border-t border-gray-50 flex justify-between items-center">
-            <div>
-              <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Filtered Monthly Total</p>
-              <p className={`text-2xl font-black ${totalFiltered > budget ? 'text-rose-500' : 'text-gray-900'}`}>
-                ₹{totalFiltered.toLocaleString()}
-              </p>
-            </div>
-            <div className="text-right">
-               <span className="px-3 py-1 bg-indigo-50 text-indigo-600 rounded-lg text-xs font-black">
-                 {filteredSubs.length} ACTIVE PLANS
-               </span>
-            </div>
-          </div>
         </div>
 
-        <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title="New Subscription">
-          <AddSubForm onSave={(data) => { setSubscriptions([...subscriptions, data]); setIsModalOpen(false); }} />
+        <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title={editingSub ? "Edit Service" : "New Service"}>
+          <AddSubForm 
+            initialData={editingSub} // Logic: Pass data if editing
+            onSave={(data) => {
+              if (editingSub) {
+                setSubscriptions(prev => prev.map(s => s._id === data._id ? data : s));
+              } else {
+                setSubscriptions([...subscriptions, data]);
+              }
+              setIsModalOpen(false);
+            }} 
+          />
         </Modal>
       </div>
     </MainLayout>

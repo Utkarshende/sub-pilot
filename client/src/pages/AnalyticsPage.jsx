@@ -28,6 +28,15 @@ function AnalyticsPage() {
   useEffect(() => {
     fetchAnalytics();
   }, [fetchAnalytics]);
+  // Inside AnalyticsPage() component
+useEffect(() => {
+  const handleStorageChange = () => {
+    // Logic: Refresh data when budget is updated on Dashboard
+    fetchAnalytics(); 
+  };
+  window.addEventListener('storage', handleStorageChange);
+  return () => window.removeEventListener('storage', handleStorageChange);
+}, [fetchAnalytics]);
 
   const total = subscriptions.reduce((sum, s) => sum + Number(s.amount || 0), 0);
   const isExceeding = total > budget;
@@ -91,7 +100,7 @@ function AnalyticsPage() {
             
             <div className="mt-12 pt-8 border-t border-gray-800 flex justify-between items-end">
               <div>
-                <p className="text-gray-400 text-[10px] font-black uppercase tracking-[0.2em]">Yearly Projection</p>
+                <p className="text-gray-400 text-[10px] font-black uppercase tracking-[0.2em]">Yearly Spending</p>
                 <p className="text-2xl font-black mt-1 text-indigo-400">₹{(total * 12).toLocaleString()}</p>
               </div>
               <div className="text-right">
