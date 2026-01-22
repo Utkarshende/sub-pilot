@@ -6,17 +6,26 @@ const subscriptionSchema = new mongoose.Schema({
     ref: 'User', 
     required: true 
   },
-  name: { type: String, required: true },
-  amount: { type: Number, required: true },
-  category: { type: String, required: true },
-  date: { type: Date, default: Date.now }
+  name: { 
+    type: String, 
+    required: true 
+  },
+  amount: { 
+    type: Number, 
+    required: true 
+  },
+  category: { 
+    type: String, 
+    required: true 
+  },
+  // FIXED: Renamed to paymentDate to match your Frontend and AddSubForm logic
+  paymentDate: { 
+    type: Date, 
+    required: true,
+    default: Date.now 
+  }
 }, { timestamps: true });
 
-const formatDate = (dateString) => {
-  if (!dateString) return "No Date Set";
-  const date = new Date(dateString);
-  if (isNaN(date.getTime())) return "Invalid Date"; // Logic: Fixes the N/A issue
-  return date.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' });
-};
-
+// Logic: Models should only export the Schema. 
+// Formatting logic (like formatDate) should stay in the Frontend components.
 export default mongoose.model('Subscription', subscriptionSchema);

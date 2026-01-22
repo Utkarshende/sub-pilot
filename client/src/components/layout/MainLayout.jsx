@@ -2,6 +2,9 @@ import React, { useState } from 'react';
 import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import Navbar from './Navbar';
 import Modal from '../ui/Modal'; // Assuming you have a reusable Modal component
+import Footer from './Footer';
+
+
 
 function MainLayout({ children }) {
   const [isCollapsed, setIsCollapsed] = useState(false);
@@ -20,6 +23,7 @@ function MainLayout({ children }) {
   };
 
   return (
+    <div>
     <div className="flex h-screen bg-gray-50 overflow-hidden font-sans text-gray-900">
       <aside className={`${isCollapsed ? 'w-20' : 'w-64'} bg-white border-r flex flex-col transition-all duration-300 ease-in-out z-20`}>
         {/* Logo Section */}
@@ -99,6 +103,9 @@ function MainLayout({ children }) {
         </div>
       </Modal>
     </div>
+<Footer/>
+</div>
+
   );
 }
 

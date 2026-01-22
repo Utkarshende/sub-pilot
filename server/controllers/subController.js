@@ -48,3 +48,21 @@ export const deleteSubscription = async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 };
+export const updateSubscription = async (req, res) => {
+  try {
+    const { id } = req.params;
+    // Ensure paymentDate is being pulled from the request body
+    const { name, amount, category, paymentDate } = req.body;
+
+    const updatedSub = await Subscription.findByIdAndUpdate(
+      id,
+      { name, amount, category, paymentDate }, 
+      { new: true, runValidators: true }
+    );
+
+    if (!updatedSub) return res.status(404).json({ message: "Subscription not found" });
+    res.json(updatedSub);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
