@@ -4,6 +4,8 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import AuthPage from './pages/AuthPage'
 import DashboardPage from './pages/DashboardPage'
 import ProtectedRoute from './components/auth/ProtectedRoute'
+import Analytics from './pages/AnalyticsPage';
+import MainLayout from './components/layout/MainLayout'
 // IMPORTANT: Notice MainLayout is NOT here at the top level
 
 function App() {
@@ -21,7 +23,7 @@ function App() {
             </ProtectedRoute>
           } 
         />
-
+<Route path="/analytics" element={<MainLayout><Analytics /></MainLayout>} />
         <Route path="/" element={<Navigate to="/dashboard" />} />
       </Routes>
     </Router> 

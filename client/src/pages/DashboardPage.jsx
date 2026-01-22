@@ -5,14 +5,17 @@ import MainLayout from '../components/layout/MainLayout';
 import SubscriptionList from '../components/dashboard/SubscriptionList';
 import AddSubForm from '../components/dashboard/AddSubForm';
 import StatCard from '../components/dashboard/StatCard';
+import Modal from '../components/ui/Modal';
 import Toast from '../components/ui/Toast';
 
 function DashboardPage() {
   const [subscriptions, setSubscriptions] = useState([]);
-  const [budget, setBudget] = useState(10000); // Logic: Default monthly budget
+  const [budget, setBudget] = useState(10000); 
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState(''); // Logic: New state for search
   const [toast, setToast] = useState({ show: false, message: '', type: '' });
 
-  // 1. Fetch Subscriptions from Backend
+  // 1. Fetch Logic
   const fetchSubscriptions = async () => {
     try {
       const response = await axiosInstance.get(API_URLS.SUBS);
@@ -26,18 +29,19 @@ function DashboardPage() {
     fetchSubscriptions();
   }, []);
 
-  // 2. Add Subscription
+  // 2. Add Logic
   const handleAddSubscription = async (formData) => {
     try {
       const response = await axiosInstance.post(API_URLS.SUBS, formData);
       setSubscriptions([...subscriptions, response.data]);
       showToast(ALERT_MESSAGES.SUCCESS_ADD, ALERT_TYPES.SUCCESS);
+      setIsModalOpen(false); // Logic: Close modal on success
     } catch (error) {
       showToast(ALERT_MESSAGES.ERROR_SAVE, ALERT_TYPES.ERROR);
     }
   };
 
-  // 3. Delete Subscription
+  // 3. Delete Logic
   const handleDeleteSubscription = async (id) => {
     try {
       await axiosInstance.delete(`${API_URLS.SUBS}/${id}`);
@@ -48,16 +52,17 @@ function DashboardPage() {
     }
   };
 
-  // 4. Helper for Notifications
+  // 4. Search Filter Logic
+  const filteredSubscriptions = subscriptions.filter(sub =>
+    sub.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   const showToast = (message, type) => {
     setToast({ show: true, message, type });
   };
 
-  // 5. Financial Calculations
   const totalMonthly = subscriptions.reduce((sum, sub) => sum + Number(sub.amount), 0);
   const remaining = budget - totalMonthly;
-  const percentageUsed = Math.min((totalMonthly / budget) * 100, 100);
-  const isOverBudget = totalMonthly > budget;
 
   return (
     <MainLayout>
@@ -66,97 +71,68 @@ function DashboardPage() {
         {/* Header Section */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
-            <h1 className="text-2xl font-bold text-gray-800">Financial Overview</h1>
-            <p className="text-gray-500">Manage your monthly subscriptions and budget</p>
+            <h1 className="text-2xl font-black text-gray-800 tracking-tight">Dashboard</h1>
+            <p className="text-gray-500 text-sm">Overview of your active subscriptions</p>
           </div>
           <button 
-            onClick={() => {
-              const newBudget = prompt("Enter your new monthly budget:", budget);
-              if (newBudget) setBudget(Number(newBudget));
-            }}
-            className="px-4 py-2 bg-white border border-gray-200 rounded-lg text-sm font-semibold text-gray-600 hover:bg-gray-50 transition shadow-sm"
+            onClick={() => setIsModalOpen(true)}
+            className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-2xl font-bold transition shadow-lg shadow-blue-100 flex items-center space-x-2"
           >
-            Edit Budget
+            <span>+ Add New Service</span>
           </button>
         </div>
 
-        {/* 1. Stat Cards Section */}
-        
+        {/* 1. Quick Stats Section */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <StatCard 
-            title="Monthly Budget" 
-            amount={budget} 
-            color="blue" 
-            icon={<svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>}
-          />
-          <StatCard 
-            title="Total Spent" 
-            amount={totalMonthly} 
-            color="orange" 
-            icon={<svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" /></svg>}
-          />
-          <StatCard 
-            title="Remaining" 
-            amount={remaining} 
-            color="green" 
-            icon={<svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>}
-          />
+          <StatCard title="Total Budget" amount={budget} color="blue" icon={<svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>} />
+          <StatCard title="Current Spend" amount={totalMonthly} color="orange" icon={<svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" /></svg>} />
+          <StatCard title="Remaining" amount={remaining} color="green" icon={<svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>} />
         </div>
 
-        {/* 2. Budget Usage Progress Bar */}
-        <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
-          <div className="flex justify-between items-end mb-4">
-            <div>
-              <h3 className="text-sm font-bold text-gray-700 uppercase tracking-tight">Budget Utilization</h3>
-              <p className="text-xs text-gray-500">Current spending relative to your limit</p>
+        {/* 2. Main List with Search Bar */}
+        <div className="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm space-y-6">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <h2 className="text-lg font-bold text-gray-800">Your Subscriptions</h2>
+            
+            {/* Search Bar Input */}
+            <div className="relative w-full md:w-64">
+              <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-400">
+                <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+              </span>
+              <input 
+                type="text"
+                placeholder="Search services..."
+                className="w-full pl-10 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none text-sm transition"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
             </div>
-            <span className={`text-lg font-bold ${isOverBudget ? 'text-red-500' : 'text-blue-600'}`}>
-              {Math.round((totalMonthly / budget) * 100)}%
-            </span>
           </div>
-          <div className="w-full bg-gray-100 rounded-full h-4 overflow-hidden">
-            <div 
-              className={`h-full transition-all duration-700 ease-out ${isOverBudget ? 'bg-red-500' : 'bg-blue-600'}`} 
-              style={{ width: `${percentageUsed}%` }}
-            ></div>
-          </div>
-          {isOverBudget && (
-            <p className="mt-2 text-xs text-red-500 font-medium">⚠️ Warning: You have exceeded your monthly budget limit!</p>
-          )}
+
+          <SubscriptionList 
+            subscriptions={filteredSubscriptions} 
+            onDelete={handleDeleteSubscription} 
+          />
         </div>
 
-        {/* 3. Main Content Grid */}
-        <div className="grid lg:grid-cols-12 gap-8">
-           {/* Left Column: Form */}
-           <div className="lg:col-span-4 bg-white p-6 rounded-2xl border border-gray-100 shadow-sm h-fit">
-             <h2 className="text-lg font-bold text-gray-800 mb-6">Add New Subscription</h2>
-             <AddSubForm onSave={handleAddSubscription} />
-           </div>
+        {/* 3. Add Service Modal */}
+        <Modal 
+          isOpen={isModalOpen} 
+          onClose={() => setIsModalOpen(false)} 
+          title="Add New Subscription"
+        >
+          <AddSubForm onSave={handleAddSubscription} />
+        </Modal>
 
-           {/* Right Column: List */}
-           <div className="lg:col-span-8 bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
-             <div className="flex items-center justify-between mb-6">
-               <h2 className="text-lg font-bold text-gray-800">Your Active Plans</h2>
-               <span className="bg-gray-100 text-gray-600 px-3 py-1 rounded-full text-xs font-bold">
-                 {subscriptions.length} Services
-               </span>
-             </div>
-             <SubscriptionList 
-               subscriptions={subscriptions} 
-               onDelete={handleDeleteSubscription} 
-             />
-           </div>
-        </div>
+        {/* 4. Notification Toast */}
+        {toast.show && (
+          <Toast 
+            message={toast.message} 
+            type={toast.type} 
+            onClose={() => setToast({ ...toast, show: false })} 
+          />
+        )}
       </div>
-
-      {/* 4. Notification Toast */}
-      {toast.show && (
-        <Toast 
-          message={toast.message} 
-          type={toast.type} 
-          onClose={() => setToast({ ...toast, show: false })} 
-        />
-      )}
     </MainLayout>
   );
 }
