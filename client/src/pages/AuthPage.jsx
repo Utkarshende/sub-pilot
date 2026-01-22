@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import Button from '../components/ui/Button';
 import { BTN_VARIANTS } from '../constants';
+import { useNavigate } from 'react-router-dom';
 
 function AuthPage() {
   const [isLogin, setIsLogin] = useState(true); // Toggle between Login and Register

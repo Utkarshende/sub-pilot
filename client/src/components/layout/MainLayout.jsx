@@ -1,5 +1,6 @@
 import React from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom';
+
 
 function MainLayout({ children }) {
   const navigate = useNavigate();
@@ -9,7 +10,7 @@ function MainLayout({ children }) {
 
   const handleLogout = () => {
     // Logic: Clear all traces of the session
-    localStorage.removeItem('token');
+    localStorage.removeItem('token');a
     localStorage.removeItem('user');
     
     // Logic: Redirect to login
