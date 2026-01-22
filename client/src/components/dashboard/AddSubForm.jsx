@@ -2,16 +2,17 @@ import React, { useState, useEffect } from 'react';
 import axiosInstance from '../../api/axiosInstance';
 
 function AddSubForm({ initialData, onSave }) {
+  const CATEGORIES = ['Entertainment', 'Utilities', 'Work', 'Health', 'Food', 'Other'];
+
   const [formData, setFormData] = useState({ 
     name: '', 
     amount: '', 
-    category: 'Entertainment',
-    paymentDate: new Date().toISOString().split('T')[0] // Default to today
+    category: 'Entertainment', // Default category
+    paymentDate: new Date().toISOString().split('T')[0]
   });
 
   useEffect(() => {
     if (initialData) {
-      // Ensure the date is formatted correctly for the input
       const formattedDate = initialData.paymentDate 
         ? new Date(initialData.paymentDate).toISOString().split('T')[0] 
         : '';
@@ -35,15 +36,37 @@ function AddSubForm({ initialData, onSave }) {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-5 p-2">
+      {/* Service Name */}
       <div className="space-y-1">
         <label className="text-[10px] font-black uppercase text-slate-400 ml-1">Service Name</label>
         <input 
-          className="w-full p-4 bg-slate-50 border border-slate-100 rounded-2xl outline-none focus:border-indigo-500 font-bold text-slate-800"
+          className="w-full p-4 bg-slate-50 border border-slate-100 rounded-2xl outline-none focus:border-indigo-500 font-bold"
           value={formData.name}
           onChange={(e) => setFormData({...formData, name: e.target.value})}
-          placeholder="e.g. Netflix, Gym, AWS"
+          placeholder="e.g. Spotify"
           required
         />
+      </div>
+
+      {/* CATEGORY SELECTOR BUTTONS */}
+      <div className="space-y-2">
+        <label className="text-[10px] font-black uppercase text-slate-400 ml-1">Category</label>
+        <div className="flex flex-wrap gap-2">
+          {CATEGORIES.map((cat) => (
+            <button
+              key={cat}
+              type="button"
+              onClick={() => setFormData({ ...formData, category: cat })}
+              className={`px-4 py-2 rounded-xl text-xs font-black transition-all border ${
+                formData.category === cat 
+                ? 'bg-indigo-600 text-white border-indigo-600 shadow-md shadow-indigo-100' 
+                : 'bg-white text-slate-400 border-slate-100 hover:bg-slate-50'
+              }`}
+            >
+              {cat}
+            </button>
+          ))}
+        </div>
       </div>
 
       <div className="grid grid-cols-2 gap-4">
@@ -61,7 +84,7 @@ function AddSubForm({ initialData, onSave }) {
           <label className="text-[10px] font-black uppercase text-slate-400 ml-1">Billing Date</label>
           <input 
             type="date"
-            className="w-full p-4 bg-slate-50 border border-slate-100 rounded-2xl outline-none focus:border-indigo-500 font-bold text-slate-600"
+            className="w-full p-4 bg-slate-50 border border-slate-100 rounded-2xl outline-none focus:border-indigo-500 font-bold"
             value={formData.paymentDate}
             onChange={(e) => setFormData({...formData, paymentDate: e.target.value})}
             required
@@ -69,8 +92,8 @@ function AddSubForm({ initialData, onSave }) {
         </div>
       </div>
 
-      <button type="submit" className="w-full py-5 bg-indigo-600 text-white rounded-2xl font-black uppercase tracking-widest shadow-lg shadow-indigo-100 mt-4 hover:bg-indigo-700 transition-all">
-        {initialData ? 'Update Details' : 'Save Subscription'}
+      <button type="submit" className="w-full py-5 bg-indigo-600 text-white rounded-2xl font-black uppercase tracking-widest shadow-lg shadow-indigo-100 mt-2 hover:bg-indigo-700 transition-all">
+        {initialData ? 'Update Plan' : 'Save Subscription'}
       </button>
     </form>
   );

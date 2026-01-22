@@ -33,7 +33,7 @@ function AnalyticsPage() {
                 <p className="text-indigo-400 text-xs font-black uppercase tracking-widest mb-2">Monthly Calculation</p>
                 <p className="text-xl font-medium leading-relaxed">
                   Your current monthly burn is <span className="text-white font-black">₹{total}</span>. 
-                  By staying under your limit, you save <span className="text-emerald-400 font-black">₹{savings}</span> for your dream goal.
+                  By staying under your limit, you save <span className="text-emerald-400 font-black">₹{savings}</span>.
                 </p>
               </div>
               
