@@ -1,34 +1,34 @@
-import React from 'react'
+import React from 'react';
 
-function Navbar({ pageTitle }) {
-  // Logic: Format today's date professionally
-  const today = new Date().toLocaleDateString('en-IN', { 
-    weekday: 'long', 
-    day: 'numeric', 
-    month: 'long' 
-  });
+function Navbar({ pageTitle, totalSpent, budget }) {
+  const percent = Math.round((totalSpent / budget) * 100);
 
   return (
-    <header className="h-16 bg-white border-b flex items-center justify-between px-8 sticky top-0 z-10">
-      <div className="flex items-center space-x-2">
-        {/* Mobile menu trigger could go here later */}
-        <h2 className="text-gray-800 font-bold text-lg">{pageTitle}</h2>
+    <header className="h-20 bg-white border-b px-8 flex items-center justify-between sticky top-0 z-10">
+      <div>
+        <h2 className="text-xl font-black text-gray-900 tracking-tight">{pageTitle}</h2>
       </div>
 
-      <div className="flex items-center space-x-4">
-        <div className="hidden md:block text-sm text-gray-400 font-medium">
-          {today}
+      <div className="flex items-center space-x-6">
+        <div className="text-right hidden sm:block">
+          <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Budget Health</p>
+          <div className="flex items-center space-x-2">
+            <div className="w-24 h-1.5 bg-gray-100 rounded-full overflow-hidden">
+              <div 
+                className={`h-full ${percent > 90 ? 'bg-rose-500' : 'bg-indigo-600'}`} 
+                style={{ width: `${Math.min(percent, 100)}%` }}
+              />
+            </div>
+            <span className="text-xs font-bold text-gray-700">{percent}%</span>
+          </div>
         </div>
-        
-        {/* Logic: Quick actions like Notifications could go here */}
-        <button className="p-2 text-gray-400 hover:text-blue-600 transition">
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v1m6 0H9" />
-          </svg>
-        </button>
+        <div className="h-8 w-px bg-gray-100" />
+        <div className="w-10 h-10 bg-indigo-100 rounded-full flex items-center justify-center text-indigo-600 font-black">
+          U
+        </div>
       </div>
     </header>
-  )
+  );
 }
 
-export default Navbar
+export default Navbar;a
