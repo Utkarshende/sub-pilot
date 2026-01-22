@@ -11,7 +11,6 @@ function Navbar({ pageTitle, totalSpent, budget }) {
 
       <div className="flex items-center space-x-6">
         <div className="text-right hidden sm:block">
-          <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Budget Health</p>
           <div className="flex items-center space-x-2">
             <div className="w-24 h-1.5 bg-gray-100 rounded-full overflow-hidden">
               <div 
@@ -31,4 +30,4 @@ function Navbar({ pageTitle, totalSpent, budget }) {
   );
 }
 
-export default Navbar;a
+export default Navbar;
