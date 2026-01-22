@@ -5,6 +5,8 @@ export const API_URLS = {
   SUBS: "/subscriptions",
 };
 
+export const BUDGET_KEY = 'user_monthly_budget';
+
 // 2. ALERT & TOAST NOTIFICATIONS
 // Logic: Keeping these central makes it easy to change the "tone" of your app
 export const ALERT_MESSAGES = {
@@ -49,3 +51,4 @@ export const UI_STRINGS = {
   CONFIRM_DELETE: "Are you sure you want to delete this?",
   EMPTY_STATE: "No subscriptions yet. Add one above!",
 };
+
