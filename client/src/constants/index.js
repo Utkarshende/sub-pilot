@@ -6,9 +6,15 @@ export const API_URLS = {
 };
 
 export const BUDGET_KEY = 'user_monthly_budget';
+export const CHART_COLORS = [
+  '#4F46E5', // Indigo
+  '#8B5CF6', // Purple
+  '#EC4899', // Pink
+  '#10B981', // Emerald
+  '#F59E0B', // Amber
+  '#6B7280', // Gray
+];
 
-// 2. ALERT & TOAST NOTIFICATIONS
-// Logic: Keeping these central makes it easy to change the "tone" of your app
 export const ALERT_MESSAGES = {
   SUCCESS_ADD: "Subscription added successfully!",
   SUCCESS_DELETE: "Subscription removed successfully!",
