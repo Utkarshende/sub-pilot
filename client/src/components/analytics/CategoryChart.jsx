@@ -1,47 +1,39 @@
-import React from 'react';
-import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
+import React, { useMemo } from 'react'; // Logic: useMemo ensures chart updates correctly
 import { Doughnut } from 'react-chartjs-2';
-import { CHART_COLORS } from '../../constants'; // Logic: Import centralized colors
-
-ChartJS.register(ArcElement, Tooltip, Legend);
+import { CHART_COLORS } from '../../constants';
 
 function CategoryChart({ subscriptions = [] }) {
-  const categoryTotals = subscriptions.reduce((acc, sub) => {
-    const category = sub.category || 'Other';
-    // Logic: Use .amount (as per your backend) and handle numbers safely
-    acc[category] = (acc[category] || 0) + Number(sub.amount || 0);
-    return acc;
-  }, {});
+  // Logic: Recalculate whenever subscriptions change
+  const chartData = useMemo(() => {
+    const categoryTotals = subscriptions.reduce((acc, sub) => {
+      const cat = sub.category || 'Other';
+      acc[cat] = (acc[cat] || 0) + Number(sub.amount || 0); // Logic: Fixed field name to 'amount'
+      return acc;
+    }, {});
 
-  const labels = Object.keys(categoryTotals);
-  const dataValues = Object.values(categoryTotals);
-
-  const data = {
-    labels: labels,
-    datasets: [{
-      data: dataValues,
-      backgroundColor: CHART_COLORS,
-      borderWidth: 0, // Logic: Remove borders for a cleaner look
-      hoverOffset: 20,
-    }],
-  };
+    return {
+      labels: Object.keys(categoryTotals),
+      datasets: [{
+        data: Object.values(categoryTotals),
+        backgroundColor: CHART_COLORS,
+        borderWidth: 0,
+        hoverOffset: 10,
+      }],
+    };
+  }, [subscriptions]);
 
   const options = {
     responsive: true,
     maintainAspectRatio: false,
     plugins: {
-      legend: { position: 'bottom', labels: { usePointStyle: true, padding: 30 } },
+      legend: { position: 'right', labels: { boxWidth: 12, padding: 20 } },
     },
-    cutout: '75%', // Thinner ring for more premium feel
+    cutout: '70%',
   };
 
   return (
-    <div className="h-full w-full flex flex-col">
-      {dataValues.length > 0 ? (
-        <Doughnut data={data} options={options} />
-      ) : (
-        <div className="flex items-center justify-center h-full text-gray-400 italic">No data</div>
-      )}
+    <div className="h-64 w-full max-w-md mx-auto"> {/* Logic: Standard fixed size */}
+      <Doughnut data={chartData} options={options} />
     </div>
   );
 }
