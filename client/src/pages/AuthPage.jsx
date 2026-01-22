@@ -1,85 +1,44 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { API_URLS } from '../constants';
-// Logic: Import the instance we already set up with interceptors!
-import axiosInstance from '../api/axiosInstance'; 
+import { UI_STYLES, COLORS } from '../constants/theme';
+import axiosInstance from '../api/axiosInstance';
 
 function AuthPage() {
   const [isLogin, setIsLogin] = useState(true);
-  const [formData, setFormData] = useState({ name: '', email: '', password: '' });
-  const navigate = useNavigate();
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      // Logic: Use the correct strings for the endpoints
-      const endpoint = isLogin ? '/users/login' : '/users/register';
-      
-      console.log("Attempting request to:", endpoint);
-      const response = await axiosInstance.post(endpoint, formData);
-
-      // 1. Store session data
-      localStorage.setItem('token', response.data.token);
-      localStorage.setItem('user', JSON.stringify(response.data.user));
-      
-      // 2. Success! Redirect
-      navigate('/dashboard');
-    } catch (err) {
-      console.error("FULL ERROR:", err);
-      // Logic: Show the specific error from the backend (e.g., "User already exists")
-      alert(err.response?.data?.message || "Something went wrong. check console.");
-    }
-  };
+  const [formData, setFormData] = useState({ email: '', password: '' });
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
-      <div className="max-w-md w-full bg-white p-8 rounded-2xl shadow-xl border border-gray-100">
-        <h2 className="text-3xl font-bold text-center text-gray-800 mb-8">
-          {isLogin ? 'Welcome Back' : 'Create Account'}
-        </h2>
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-6">
+      <div className="max-w-md w-full space-y-10">
+        <div className="text-center">
+          <h1 className={UI_STYLES.heroText}>{isLogin ? 'Welcome' : 'Join Us'}</h1>
+          <p className="text-gray-500 mt-4 font-medium">Manage your digital life with Sub-Pilot.</p>
+        </div>
 
-        <form onSubmit={handleSubmit} className="space-y-5">
-          {!isLogin && (
-            <input
-              type="text"
-              placeholder="Full Name"
-              className="w-full p-3 rounded-lg border focus:ring-2 focus:ring-blue-500 outline-none"
-              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-              required
-            />
-          )}
-          <input
-            type="email"
-            placeholder="Email Address"
-            className="w-full p-3 rounded-lg border focus:ring-2 focus:ring-blue-500 outline-none"
-            onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-            required
+        <form className="space-y-4">
+          <input 
+            type="email" 
+            placeholder="Email Address" 
+            className={UI_STYLES.heavyInput} 
           />
-          <input
-            type="password"
-            placeholder="Password"
-            className="w-full p-3 rounded-lg border focus:ring-2 focus:ring-blue-500 outline-none"
-            onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-            required
+          <input 
+            type="password" 
+            placeholder="Password" 
+            className={UI_STYLES.heavyInput} 
           />
-          <button type="submit" className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition duration-200">
-            {isLogin ? 'Sign In' : 'Register'}
+          <button className={`w-full py-5 rounded-2xl bg-${COLORS.primary} text-white font-black text-xl hover:scale-[1.02] transition-transform shadow-xl shadow-indigo-200`}>
+            {isLogin ? 'Sign In' : 'Create Account'}
           </button>
         </form>
 
-        <p className="mt-6 text-center text-gray-600">
-          {isLogin ? "Don't have an account?" : "Already have an account?"}{' '}
-          <button 
-            type="button" 
-            onClick={() => setIsLogin(!isLogin)} 
-            className="text-blue-600 font-bold hover:underline"
-          >
-            {isLogin ? 'Sign Up' : 'Log In'}
-          </button>
-        </p>
+        <button 
+          onClick={() => setIsLogin(!isLogin)}
+          className="w-full text-center text-gray-400 font-bold hover:text-indigo-600 transition"
+        >
+          {isLogin ? "Don't have an account? Sign Up" : "Already a member? Login"}
+        </button>
       </div>
     </div>
   );
-} // Logic: Properly close the component function here
+}
 
 export default AuthPage;
