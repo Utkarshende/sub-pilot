@@ -1,29 +1,33 @@
 import React, { useState } from 'react';
-import Button from '../components/ui/Button';
-import { BTN_VARIANTS } from '../constants';
 import { useNavigate } from 'react-router-dom';
+import { API_URLS } from '../constants';
+// Logic: Import the instance we already set up with interceptors!
+import axiosInstance from '../api/axiosInstance'; 
 
 function AuthPage() {
-  const [isLogin, setIsLogin] = useState(true); // Toggle between Login and Register
+  const [isLogin, setIsLogin] = useState(true);
   const [formData, setFormData] = useState({ name: '', email: '', password: '' });
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      // Logic: Determine which endpoint to hit based on 'isLogin' state
-      const endpoint = isLogin ? `${API_URLS.AUTH}/login` : `${API_URLS.AUTH}/register`;
+      // Logic: Use the correct strings for the endpoints
+      const endpoint = isLogin ? '/users/login' : '/users/register';
+      
+      console.log("Attempting request to:", endpoint);
       const response = await axiosInstance.post(endpoint, formData);
 
-      // 1. Store the VIP Pass (Token)
+      // 1. Store session data
       localStorage.setItem('token', response.data.token);
-      // 2. Store basic user info for the Profile UI
       localStorage.setItem('user', JSON.stringify(response.data.user));
-
-      // 3. Take them to the dashboard
+      
+      // 2. Success! Redirect
       navigate('/dashboard');
     } catch (err) {
-      alert(err.response?.data?.message || ALERT_MESSAGES.ERROR_GENERIC);
+      console.error("FULL ERROR:", err);
+      // Logic: Show the specific error from the backend (e.g., "User already exists")
+      alert(err.response?.data?.message || "Something went wrong. check console.");
     }
   };
 
@@ -37,19 +41,23 @@ function AuthPage() {
         <form onSubmit={handleSubmit} className="space-y-5">
           {!isLogin && (
             <input
-              type="text" placeholder="Full Name"
+              type="text"
+              placeholder="Full Name"
               className="w-full p-3 rounded-lg border focus:ring-2 focus:ring-blue-500 outline-none"
               onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+              required
             />
           )}
           <input
-            type="email" placeholder="Email Address"
+            type="email"
+            placeholder="Email Address"
             className="w-full p-3 rounded-lg border focus:ring-2 focus:ring-blue-500 outline-none"
             onChange={(e) => setFormData({ ...formData, email: e.target.value })}
             required
           />
           <input
-            type="password" placeholder="Password"
+            type="password"
+            placeholder="Password"
             className="w-full p-3 rounded-lg border focus:ring-2 focus:ring-blue-500 outline-none"
             onChange={(e) => setFormData({ ...formData, password: e.target.value })}
             required
@@ -61,13 +69,17 @@ function AuthPage() {
 
         <p className="mt-6 text-center text-gray-600">
           {isLogin ? "Don't have an account?" : "Already have an account?"}{' '}
-          <button onClick={() => setIsLogin(!isLogin)} className="text-blue-600 font-bold hover:underline">
+          <button 
+            type="button" 
+            onClick={() => setIsLogin(!isLogin)} 
+            className="text-blue-600 font-bold hover:underline"
+          >
             {isLogin ? 'Sign Up' : 'Log In'}
           </button>
         </p>
       </div>
     </div>
   );
-};
+} // Logic: Properly close the component function here
 
 export default AuthPage;
