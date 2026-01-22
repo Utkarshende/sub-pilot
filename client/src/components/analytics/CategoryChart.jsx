@@ -1,6 +1,10 @@
-import React, { useMemo } from 'react';
+import React from 'react';
+import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js'; // Logic: Required registration
 import { Doughnut } from 'react-chartjs-2';
 import { CHART_PALETTE } from '../../constants/theme';
+import  { useMemo } from 'react'; // ADDED 'useMemo' here
+
+ChartJS.register(ArcElement, Tooltip, Legend);
 
 function CategoryChart({ subscriptions = [] }) {
   const chartData = useMemo(() => {

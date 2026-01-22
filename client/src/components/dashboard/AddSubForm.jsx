@@ -1,67 +1,53 @@
-import React, { useState } from 'react';
-import Button from '../ui/Button';
-import { CATEGORIES, BTN_VARIANTS, UI_STRINGS } from '../../constants';
+import React, { useState, useEffect } from 'react';
+import axiosInstance from '../../api/axiosInstance';
 
-function AddSubForm({ onSave, onCancel }) {
-  // LOGIC: Local state for the form fields
-  const [formData, setFormData] = useState({
-    name: '',
-    amount: '',
-    category: CATEGORIES[0].value, // Default to first category
-  });
+function AddSubForm({ initialData, onSave }) {
+  const [formData, setFormData] = useState({ name: '', amount: '', category: 'Entertainment' });
 
-  const handleSubmit = (e) => {
+  useEffect(() => {
+    if (initialData) setFormData(initialData);
+  }, [initialData]);
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // LOGIC: Validation before sending
-    if (!formData.name || !formData.amount) return alert("Please fill all fields");
-    onSave(formData);
+    try {
+      if (initialData?._id) {
+        // Logic: EDIT existing
+        await axiosInstance.put(`/subscriptions/${initialData._id}`, formData);
+      } else {
+        // Logic: ADD new
+        await axiosInstance.post('/subscriptions', formData);
+      }
+      onSave(); // Trigger the fetchSubs in Dashboard
+    } catch (err) {
+      console.error("Save error:", err);
+    }
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
-      <div>
-        <label className="text-sm font-semibold text-gray-600">Service Name</label>
+    <form onSubmit={handleSubmit} className="space-y-6 p-2">
+      <div className="space-y-2">
+        <label className="text-[10px] font-black uppercase text-slate-400">Plan Name</label>
         <input 
-          type="text" 
-          placeholder="e.g., Netflix"
-          className="w-full p-2 mt-1 border rounded-lg outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full p-4 bg-slate-50 border rounded-2xl outline-none focus:border-indigo-500 font-bold"
           value={formData.name}
           onChange={(e) => setFormData({...formData, name: e.target.value})}
+          required
         />
       </div>
-
-      <div>
-        <label className="text-sm font-semibold text-gray-600">Monthly Amount (₹)</label>
+      <div className="space-y-2">
+        <label className="text-[10px] font-black uppercase text-slate-400">Monthly Price (₹)</label>
         <input 
-          type="number" 
-          placeholder="0.00"
-          className="w-full p-2 mt-1 border rounded-lg outline-none focus:ring-2 focus:ring-blue-500"
+          type="number"
+          className="w-full p-4 bg-slate-50 border rounded-2xl outline-none focus:border-indigo-500 font-bold"
           value={formData.amount}
           onChange={(e) => setFormData({...formData, amount: e.target.value})}
+          required
         />
       </div>
-
-      <div>
-        <label className="text-sm font-semibold text-gray-600">Category</label>
-        <select 
-          className="w-full p-2 mt-1 border rounded-lg outline-none bg-white"
-          value={formData.category}
-          onChange={(e) => setFormData({...formData, category: e.target.value})}
-        >
-          {CATEGORIES.map(cat => (
-            <option key={cat.id} value={cat.value}>{cat.label}</option>
-          ))}
-        </select>
-      </div>
-
-      <div className="flex gap-3 pt-4">
-        <Button variant={BTN_VARIANTS.GHOST} className="flex-1" onClick={onCancel}>
-          {UI_STRINGS.CANCEL}
-        </Button>
-        <Button type="submit" variant={BTN_VARIANTS.PRIMARY} className="flex-1">
-          {UI_STRINGS.SAVE}
-        </Button>
-      </div>
+      <button type="submit" className="w-full py-5 bg-indigo-600 text-white rounded-2xl font-black uppercase tracking-widest shadow-lg shadow-indigo-100">
+        {initialData ? 'Update Plan' : 'Confirm Subscription'}
+      </button>
     </form>
   );
 }
