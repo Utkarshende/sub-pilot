@@ -5,17 +5,18 @@ import Navbar from '../components/layout/Navbar';
 
 function HomePage() {
   return (
-    <MainLayout>
-      <Navbar />
+    <div>
+              <Navbar />
       <div className="bg-white">
         {/* BIG HERO IMAGE SECTION */}
-        <section className="max-w-7xl mx-auto px-6 pt-16 pb-24">
-          <div className="relative rounded-[3rem] overflow-hidden bg-slate-900 h-[500px] mb-16 shadow-2xl">
-            <img 
+          <img 
               src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&q=80&w=2000" 
               alt="Dashboard Preview" 
-              className="w-full h-full object-cover opacity-50"
+              className="w-[300px] h-[300px] object-cover opacity-50 justify-center items-center"
             />
+        <section className="max-w-7xl mx-auto px-6 pt-16 pb-24">
+          <div className="relative rounded-[3rem] overflow-hidden bg-slate-900 h-[500px] mb-16 shadow-2xl">
+          
             <div className="absolute inset-0 flex flex-col items-center justify-center text-white px-6 text-center">
               <h1 className="text-5xl md:text-7xl font-medium tracking-tighter mb-6">Visualizing Your Wealth.</h1>
               <p className="text-lg text-slate-300 max-w-xl mb-10 font-medium italic">Your subscriptions shouldn't be a mystery. See every rupee in a single glance.</p>
@@ -39,7 +40,7 @@ function HomePage() {
           </div>
         </section>
       </div>
-    </MainLayout>
+    </div>
   );
 }
 

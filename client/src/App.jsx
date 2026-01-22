@@ -7,6 +7,7 @@ import ProtectedRoute from './components/auth/ProtectedRoute'
 import Analytics from './pages/AnalyticsPage';
 import MainLayout from './components/layout/MainLayout'
 import HomePage from './pages/HomePage'
+import ProfilePage from './pages/ProfilePage';
 // IMPORTANT: Notice MainLayout is NOT here at the top level
 
 function App() {
@@ -16,6 +17,7 @@ function App() {
        <Route path="/" element={<HomePage />} />
   <Route path="/auth" element={<AuthPage />} />
   <Route path="/dashboard" element={<DashboardPage />} />
+  <Route path="/profile" element={<ProfilePage/>}/>
       </Routes>
     </Router> 
   );

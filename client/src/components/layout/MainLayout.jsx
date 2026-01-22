@@ -4,8 +4,6 @@ import Navbar from './Navbar';
 import Modal from '../ui/Modal'; // Assuming you have a reusable Modal component
 import Footer from './Footer';
 
-
-
 function MainLayout({ children }) {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false); // New state
