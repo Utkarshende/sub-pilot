@@ -1,91 +1,82 @@
 import React, { useState, useEffect } from 'react';
 import axiosInstance from '../api/axiosInstance';
-import { API_URLS, BUDGET_KEY } from '../constants';
+import { BUDGET_KEY } from '../constants';
 import { UI_STYLES } from '../constants/theme';
 import MainLayout from '../components/layout/MainLayout';
 import SubscriptionList from '../components/dashboard/SubscriptionList';
-import Modal from '../components/ui/Modal';
-import AddSubForm from '../components/dashboard/AddSubForm';
 
 function DashboardPage() {
   const [subscriptions, setSubscriptions] = useState([]);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editingSub, setEditingSub] = useState(null); // Logic: Track which sub is being edited
-  const [searchTerm, setSearchTerm] = useState('');
-  const [isEditingBudget, setIsEditingBudget] = useState(false);
-  
   const [budget, setBudget] = useState(() => Number(localStorage.getItem(BUDGET_KEY)) || 5000);
-  const [tempBudget, setTempBudget] = useState(budget);
+  
+  // Logic: Mock Goal (In a real app, this would come from a 'goals' database table)
+  const [goal] = useState({ name: "MacBook Air M3", target: 90000 });
+  const [savedSoFar, setSavedSoFar] = useState(15000); 
 
-  useEffect(() => { fetchSubs(); }, []);
-
-  const fetchSubs = async () => {
-    try {
-      const res = await axiosInstance.get(API_URLS.SUBS);
+  useEffect(() => {
+    const fetchSubs = async () => {
+      const res = await axiosInstance.get('/subscriptions');
       setSubscriptions(res.data);
-    } catch (err) { console.error(err); }
-  };
+    };
+    fetchSubs();
+  }, []);
 
-  const handleSaveBudget = () => {
-    setBudget(Number(tempBudget));
-    localStorage.setItem(BUDGET_KEY, tempBudget);
-    setIsEditingBudget(false);
-    // Logic: Force a storage event so other pages know budget changed
-    window.dispatchEvent(new Event('storage'));
-  };
-
-  const handleEdit = (sub) => {
-    setEditingSub(sub);
-    setIsModalOpen(true);
-  };
-
-  const filteredSubs = subscriptions.filter(s => s.name.toLowerCase().includes(searchTerm.toLowerCase()));
+  const totalSpent = subscriptions.reduce((sum, s) => sum + Number(s.amount || 0), 0);
+  const monthlySavings = Math.max(0, budget - totalSpent);
+  const progressPercent = Math.min(100, (savedSoFar / goal.target) * 100);
 
   return (
     <MainLayout>
-      <div className="max-w-5xl mx-auto space-y-10">
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
-          <div className="space-y-2">
-            <h1 className={UI_STYLES.heroText}>Dashboard</h1>
-            <div className="flex items-center space-x-2 bg-white p-2 px-4 rounded-xl border border-gray-100 shadow-sm">
-               <span className="text-[10px] font-black text-gray-400 uppercase">Limit:</span>
-               {isEditingBudget ? (
-                 <input autoFocus type="number" className="w-24 font-black text-indigo-600 outline-none" value={tempBudget}
-                   onChange={(e) => setTempBudget(e.target.value)} onBlur={handleSaveBudget} 
-                   onKeyDown={(e) => e.key === 'Enter' && handleSaveBudget()}
-                 />
-               ) : (
-                 <button onClick={() => setIsEditingBudget(true)} className="font-black text-gray-800">₹{budget.toLocaleString()}</button>
-               )}
+      <div className="max-w-6xl mx-auto space-y-8 pb-12">
+        
+        {/* --- SECTION 1: THE SAVINGS GOAL TRACKER --- */}
+        <div className="bg-white border border-slate-200 rounded-[2.5rem] p-8 shadow-sm overflow-hidden relative">
+          <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
+            <div className="space-y-2">
+              <p className="text-[10px] font-black text-emerald-500 uppercase tracking-[0.2em]">Goal Tracker</p>
+              <h2 className="text-3xl font-black text-slate-800">{goal.name}</h2>
+              <p className="text-sm text-slate-400 font-medium italic">
+                You're saving <span className="text-emerald-500 font-bold">₹{monthlySavings.toLocaleString()}</span> this month towards this goal.
+              </p>
+            </div>
+            
+            <div className="text-right flex flex-col items-end">
+              <p className="text-4xl font-black text-slate-900">₹{savedSoFar.toLocaleString()} <span className="text-slate-300 text-xl">/ ₹{goal.target.toLocaleString()}</span></p>
+              <div className="w-64 h-2 bg-slate-100 rounded-full mt-4 overflow-hidden">
+                <div 
+                  className="h-full bg-emerald-500 transition-all duration-1000 ease-out" 
+                  style={{ width: `${progressPercent}%` }}
+                />
+              </div>
             </div>
           </div>
-          <button onClick={() => { setEditingSub(null); setIsModalOpen(true); }} className={UI_STYLES.button}>+ Add New</button>
-        </div>
-
-        <div className={UI_STYLES.card}>
-          <input type="text" placeholder="Search..." className={UI_STYLES.input} onChange={(e) => setSearchTerm(e.target.value)} />
-          <div className="mt-8">
-            <SubscriptionList 
-               subscriptions={filteredSubs} 
-               onDelete={(id) => setSubscriptions(s => s.filter(x => x._id !== id))}
-               onEdit={handleEdit} // Logic: New Edit prop
-            />
+          {/* Subtle Background Pattern */}
+          <div className="absolute -right-10 -bottom-10 text-emerald-50 opacity-[0.03] scale-150 rotate-12">
+            <svg width="200" height="200" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 14h-2v-2h2v2zm0-4h-2V7h2v5z"/></svg>
           </div>
         </div>
 
-        <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title={editingSub ? "Edit Service" : "New Service"}>
-          <AddSubForm 
-            initialData={editingSub} // Logic: Pass data if editing
-            onSave={(data) => {
-              if (editingSub) {
-                setSubscriptions(prev => prev.map(s => s._id === data._id ? data : s));
-              } else {
-                setSubscriptions([...subscriptions, data]);
-              }
-              setIsModalOpen(false);
-            }} 
-          />
-        </Modal>
+        {/* --- SECTION 2: BUDGET SUMMARY BAR --- */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="bg-indigo-600 p-8 rounded-[2rem] text-white">
+            <p className="text-indigo-200 text-[10px] font-black uppercase tracking-widest">Available to Spend</p>
+            <p className="text-4xl font-black mt-1">₹{(budget - totalSpent).toLocaleString()}</p>
+          </div>
+          <div className="bg-slate-900 p-8 rounded-[2rem] text-white">
+            <p className="text-slate-400 text-[10px] font-black uppercase tracking-widest">Monthly Burn</p>
+            <p className="text-4xl font-black mt-1">₹{totalSpent.toLocaleString()}</p>
+          </div>
+        </div>
+
+        {/* --- SECTION 3: REFINED SUBSCRIPTION LIST --- */}
+        <div className="bg-white border border-slate-200 rounded-[2.5rem] p-8 shadow-sm">
+           <div className="flex justify-between items-center mb-8">
+              <h3 className="font-black text-slate-800 uppercase tracking-widest text-sm">Active Subscriptions</h3>
+              <div className="text-xs font-bold text-slate-400">{subscriptions.length} Services Tracked</div>
+           </div>
+           <SubscriptionList subscriptions={subscriptions} />
+        </div>
+
       </div>
     </MainLayout>
   );
