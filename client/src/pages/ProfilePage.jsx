@@ -26,12 +26,22 @@ function ProfilePage() {
   }, []);
 
   const handleUpdate = async () => {
-    try {
-      await axiosInstance.put('/users/profile', user);
-      setIsEditing(false);
-      alert("Profile updated successfully!");
-    } catch (err) { alert("Update failed"); }
-  };
+  try {
+    const res = await axiosInstance.put('/users/profile', user);
+    
+    // Update local storage so the Navbar "initial" updates
+    localStorage.setItem('user_name', res.data.name);
+    
+    // If you have an AuthContext, you'd call a refresh function here
+    // For now, we'll trigger a small window event to notify other components
+    window.dispatchEvent(new Event("storage")); 
+    
+    setIsEditing(false);
+    alert("Profile updated successfully!");
+  } catch (err) { 
+    alert("Update failed"); 
+  }
+};
 
   const handleChangePassword = async (e) => {
     e.preventDefault();
