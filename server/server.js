@@ -21,4 +21,5 @@ app.use('/api/users', userLink);
 app.use('/api/subscriptions', subLink);
 
 const PORT = process.env.PORT || 8080;
-app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
+app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`),
+connectDB());
