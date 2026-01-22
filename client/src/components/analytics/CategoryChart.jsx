@@ -1,52 +1,38 @@
 import React, { useMemo } from 'react';
-import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
 import { Doughnut } from 'react-chartjs-2';
-
-ChartJS.register(ArcElement, Tooltip, Legend);
-
-// Logic: Use a specific color array for distinct categories
-const CATEGORY_COLORS = {
-  Entertainment: '#6366F1', // Indigo
-  Utilities: '#10B981',      // Emerald
-  Work: '#F59E0B',           // Amber
-  Food: '#EF4444',           // Rose
-  Health: '#EC4899',         // Pink
-  Other: '#94A3B8'           // Slate
-};
+import { CHART_PALETTE } from '../../constants/theme';
 
 function CategoryChart({ subscriptions = [] }) {
   const chartData = useMemo(() => {
     const totals = subscriptions.reduce((acc, sub) => {
-      const cat = sub.category || 'Other';
-      acc[cat] = (acc[cat] || 0) + Number(sub.amount || 0);
+      acc[sub.category] = (acc[sub.category] || 0) + Number(sub.amount);
       return acc;
     }, {});
 
-    const labels = Object.keys(totals);
     return {
-      labels,
+      labels: Object.keys(totals),
       datasets: [{
         data: Object.values(totals),
-        backgroundColor: labels.map(label => CATEGORY_COLORS[label] || CATEGORY_COLORS.Other),
-        hoverOffset: 15,
-        borderWidth: 0,
+        backgroundColor: CHART_PALETTE,
+        hoverOffset: 10,
+        borderWidth: 4,
+        borderColor: '#ffffff',
       }],
     };
   }, [subscriptions]);
 
   const options = {
-    cutout: '75%',
+    cutout: '80%',
     plugins: {
-      legend: { position: 'bottom', labels: { usePointStyle: true, padding: 20 } }
+      legend: { 
+        position: 'right', 
+        labels: { boxWidth: 8, usePointStyle: true, font: { weight: 'bold', size: 10 } } 
+      }
     },
     maintainAspectRatio: false
   };
 
-  return (
-    <div className="h-64 relative">
-      <Doughnut data={chartData} options={options} />
-    </div>
-  );
+  return <Doughnut data={chartData} options={options} />;
 }
 
 export default CategoryChart;
