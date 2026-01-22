@@ -12,19 +12,9 @@ function App() {
   return (
     <Router> {/* 1. Router starts here */}
       <Routes>
-        <Route path="/login" element={<AuthPage />} />
-        
-        <Route 
-          path="/dashboard" 
-          element={
-            <ProtectedRoute>
-              {/* 2. MainLayout lives INSIDE the DashboardPage or the Route */}
-              <DashboardPage /> 
-            </ProtectedRoute>
-          } 
-        />
-<Route path="/analytics" element={<MainLayout><Analytics /></MainLayout>} />
-        <Route path="/" element={<Navigate to="/dashboard" />} />
+       <Route path="/" element={<HomePage />} />
+  <Route path="/auth" element={<AuthPage />} />
+  <Route path="/dashboard" element={<DashboardPage />} />
       </Routes>
     </Router> 
   );
