@@ -1,13 +1,16 @@
-import React, { useMemo } from 'react'; // Logic: useMemo ensures chart updates correctly
+import React, { useMemo } from 'react';
+import { Chart as ChartJS, ArcElement, Tooltip, Legend, Colors } from 'chart.js';
 import { Doughnut } from 'react-chartjs-2';
 import { CHART_COLORS } from '../../constants';
 
+// CRITICAL FIX: Explicitly register the "arc" element for Doughnut charts
+ChartJS.register(ArcElement, Tooltip, Legend, Colors);
+
 function CategoryChart({ subscriptions = [] }) {
-  // Logic: Recalculate whenever subscriptions change
   const chartData = useMemo(() => {
     const categoryTotals = subscriptions.reduce((acc, sub) => {
       const cat = sub.category || 'Other';
-      acc[cat] = (acc[cat] || 0) + Number(sub.amount || 0); // Logic: Fixed field name to 'amount'
+      acc[cat] = (acc[cat] || 0) + Number(sub.amount || 0);
       return acc;
     }, {});
 
@@ -17,7 +20,7 @@ function CategoryChart({ subscriptions = [] }) {
         data: Object.values(categoryTotals),
         backgroundColor: CHART_COLORS,
         borderWidth: 0,
-        hoverOffset: 10,
+        hoverOffset: 12,
       }],
     };
   }, [subscriptions]);
@@ -26,14 +29,21 @@ function CategoryChart({ subscriptions = [] }) {
     responsive: true,
     maintainAspectRatio: false,
     plugins: {
-      legend: { position: 'right', labels: { boxWidth: 12, padding: 20 } },
+      legend: { 
+        position: 'bottom', 
+        labels: { usePointStyle: true, padding: 20, font: { size: 11, weight: 'bold' } } 
+      },
     },
-    cutout: '70%',
+    cutout: '75%',
   };
 
   return (
-    <div className="h-64 w-full max-w-md mx-auto"> {/* Logic: Standard fixed size */}
-      <Doughnut data={chartData} options={options} />
+    <div className="h-64 w-full flex items-center justify-center">
+      {chartData.datasets[0].data.length > 0 ? (
+        <Doughnut data={chartData} options={options} />
+      ) : (
+        <p className="text-gray-400 italic text-sm">No data to display</p>
+      )}
     </div>
   );
 }

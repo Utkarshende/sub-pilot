@@ -22,7 +22,7 @@ function DashboardPage() {
     try {
       const res = await axiosInstance.get(API_URLS.SUBS);
       setSubscriptions(res.data);
-    } catch (err) { console.error(err); }
+    } catch (err) { console.error("Error fetching data:", err); }
   };
 
   const handleSaveBudget = () => {
@@ -31,16 +31,21 @@ function DashboardPage() {
     setIsEditingBudget(false);
   };
 
-  const filteredSubs = subscriptions.filter(s => s.name.toLowerCase().includes(searchTerm.toLowerCase()));
+  const filteredSubs = subscriptions.filter(s => 
+    s.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const totalFiltered = filteredSubs.reduce((sum, s) => sum + Number(s.amount || 0), 0);
 
   return (
     <MainLayout>
       <div className="max-w-5xl mx-auto space-y-10">
+        {/* Header Logic */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
           <div className="space-y-2">
             <h1 className={UI_STYLES.heroText}>Dashboard</h1>
-            <div className="flex items-center space-x-2">
-               <span className="text-xs font-black text-gray-400 uppercase tracking-widest">Budget:</span>
+            <div className="flex items-center space-x-3 bg-white px-4 py-2 rounded-xl border border-gray-100 shadow-sm w-fit">
+               <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Monthly Limit:</span>
                {isEditingBudget ? (
                  <input 
                    autoFocus
@@ -64,15 +69,36 @@ function DashboardPage() {
           <button onClick={() => setIsModalOpen(true)} className={UI_STYLES.button}>+ Add New</button>
         </div>
 
+        {/* List Section with Summary Footer */}
         <div className={UI_STYLES.card}>
-          <input 
-            type="text" 
-            placeholder="Search subscriptions..." 
-            className={UI_STYLES.input}
-            onChange={(e) => setSearchTerm(e.target.value)}
+          <div className="relative mb-8">
+            <input 
+              type="text" 
+              placeholder="Search your services..." 
+              className={UI_STYLES.input}
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+          </div>
+          
+          <SubscriptionList 
+            subscriptions={filteredSubs} 
+            onDelete={(id) => setSubscriptions(s => s.filter(x => x._id !== id))} 
           />
-          <div className="mt-8">
-            <SubscriptionList subscriptions={filteredSubs} onDelete={(id) => setSubscriptions(s => s.filter(x => x._id !== id))} />
+
+          {/* New Filtered Summary Bar */}
+          <div className="mt-8 pt-8 border-t border-gray-50 flex justify-between items-center">
+            <div>
+              <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Filtered Monthly Total</p>
+              <p className={`text-2xl font-black ${totalFiltered > budget ? 'text-rose-500' : 'text-gray-900'}`}>
+                ₹{totalFiltered.toLocaleString()}
+              </p>
+            </div>
+            <div className="text-right">
+               <span className="px-3 py-1 bg-indigo-50 text-indigo-600 rounded-lg text-xs font-black">
+                 {filteredSubs.length} ACTIVE PLANS
+               </span>
+            </div>
           </div>
         </div>
 
