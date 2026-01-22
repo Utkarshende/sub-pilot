@@ -18,7 +18,7 @@ function AnalyticsPage() {
   const total = subscriptions.reduce((sum, s) => sum + Number(s.amount || 0), 0);
 
   return (
-    <MainLayout>
+    
       <div className="max-w-5xl mx-auto space-y-6">
         <h1 className="text-3xl font-black text-gray-900">Financial Insights</h1>
         
@@ -40,7 +40,6 @@ function AnalyticsPage() {
           </div>
         </div>
       </div>
-    </MainLayout>
   );
 }
 
