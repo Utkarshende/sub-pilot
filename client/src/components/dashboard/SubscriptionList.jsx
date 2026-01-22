@@ -1,4 +1,5 @@
 import React from 'react';
+import { SUBSCRIPTION_CATEGORIES } from '../../constants/categories';
 
 function SubscriptionList({ subscriptions, onDelete, onEdit }) {
   
@@ -44,6 +45,7 @@ function SubscriptionList({ subscriptions, onDelete, onEdit }) {
           {subscriptions && subscriptions.length > 0 ? (
             subscriptions.map((sub) => {
               const countdown = getDaysRemaining(sub.paymentDate || sub.dueDate);
+              const categoryStyle = SUBSCRIPTION_CATEGORIES.find(c => c.label === sub.category) || SUBSCRIPTION_CATEGORIES[5];
               return (
                 <tr key={sub._id} className="bg-slate-50/50 group hover:bg-white transition-all border border-transparent hover:border-slate-200 shadow-sm rounded-2xl">
                   {/* Plan Name */}

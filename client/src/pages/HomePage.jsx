@@ -1,45 +1,45 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import MainLayout from '../components/layout/MainLayout';
+import Navbar from '../components/layout/Navbar';
 
 function HomePage() {
   return (
-    <div className="min-h-screen bg-white font-sans text-slate-900">
-      {/* Hero Section */}
-      <section className="max-w-7xl mx-auto px-6 py-20 text-center">
-        <h1 className="text-6xl md:text-8xl font-black tracking-tighter mb-8 italic">
-          STOP LEAKING <span className="text-indigo-600">CASH.</span>
-        </h1>
-        <p className="max-w-2xl mx-auto text-xl text-slate-500 font-medium leading-relaxed mb-10">
-          SubPilot is a high-performance subscription commander. Track every rupee, visualize your burn rate, and reach your financial goals faster by cutting the digital clutter.
-        </p>
-        <div className="flex justify-center gap-4">
-          <Link to="/auth" className="bg-slate-900 text-white px-10 py-5 rounded-2xl font-black uppercase tracking-widest hover:bg-indigo-600 transition-all shadow-xl">
-            Launch Commander
-          </Link>
-        </div>
-      </section>
+    <MainLayout>
+      <Navbar />
+      <div className="bg-white">
+        {/* BIG HERO IMAGE SECTION */}
+        <section className="max-w-7xl mx-auto px-6 pt-16 pb-24">
+          <div className="relative rounded-[3rem] overflow-hidden bg-slate-900 h-[500px] mb-16 shadow-2xl">
+            <img 
+              src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&q=80&w=2000" 
+              alt="Dashboard Preview" 
+              className="w-full h-full object-cover opacity-50"
+            />
+            <div className="absolute inset-0 flex flex-col items-center justify-center text-white px-6 text-center">
+              <h1 className="text-5xl md:text-7xl font-medium tracking-tighter mb-6">Visualizing Your Wealth.</h1>
+              <p className="text-lg text-slate-300 max-w-xl mb-10 font-medium italic">Your subscriptions shouldn't be a mystery. See every rupee in a single glance.</p>
+              <Link to="/auth" className="bg-indigo-600 hover:bg-indigo-500 text-white px-12 py-5 rounded-3xl font-bold uppercase tracking-widest transition-all">Start Commander</Link>
+            </div>
+          </div>
 
-      {/* Features Section */}
-      <section className="bg-slate-50 py-20">
-        <div className="max-w-7xl mx-auto px-6 grid md:grid-cols-3 gap-12">
-          <div className="bg-white p-10 rounded-[2.5rem] shadow-sm">
-            <div className="text-4xl mb-4">📊</div>
-            <h3 className="font-black text-xl mb-2 uppercase">Live Burn Rate</h3>
-            <p className="text-slate-500 font-medium">See exactly how much money leaves your account every single month in real-time.</p>
+          <div className="grid md:grid-cols-3 gap-12 py-10">
+            <div className="space-y-4">
+              <h3 className="text-xl font-bold italic tracking-tight">01. Automated Logic</h3>
+              <p className="text-slate-500 font-medium">Connect your plans and let our system calculate your annual and monthly leakages.</p>
+            </div>
+            <div className="space-y-4">
+              <h3 className="text-xl font-bold italic tracking-tight">02. Visual Badges</h3>
+              <p className="text-slate-500 font-medium">Categorize spendings with interactive badges to identify high-cost habits instantly.</p>
+            </div>
+            <div className="space-y-4">
+              <h3 className="text-xl font-bold italic tracking-tight">03. Secure Data</h3>
+              <p className="text-slate-500 font-medium">Your financial data is encrypted and tied strictly to your unique account ID.</p>
+            </div>
           </div>
-          <div className="bg-white p-10 rounded-[2.5rem] shadow-sm">
-            <div className="text-4xl mb-4">📅</div>
-            <h3 className="font-black text-xl mb-2 uppercase">Due Tracking</h3>
-            <p className="text-slate-500 font-medium">Never get surprised by an auto-debit again. Track billing dates with precision.</p>
-          </div>
-          <div className="bg-white p-10 rounded-[2.5rem] shadow-sm">
-            <div className="text-4xl mb-4">🎯</div>
-            <h3 className="font-black text-xl mb-2 uppercase">Financial Logic</h3>
-            <p className="text-slate-500 font-medium">Categorize your spending to see which habits are draining your wealth.</p>
-          </div>
-        </div>
-      </section>
-    </div>
+        </section>
+      </div>
+    </MainLayout>
   );
 }
 

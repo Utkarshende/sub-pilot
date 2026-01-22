@@ -6,6 +6,7 @@ import DashboardPage from './pages/DashboardPage'
 import ProtectedRoute from './components/auth/ProtectedRoute'
 import Analytics from './pages/AnalyticsPage';
 import MainLayout from './components/layout/MainLayout'
+import HomePage from './pages/HomePage'
 // IMPORTANT: Notice MainLayout is NOT here at the top level
 
 function App() {
