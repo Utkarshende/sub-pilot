@@ -1,71 +1,66 @@
 import React from 'react'
-import { useNavigate } from 'react-router-dom';
-
+import { NavLink, useNavigate, useLocation } from 'react-router-dom'
+import Navbar from './Navbar' // Import our new component
 
 function MainLayout({ children }) {
   const navigate = useNavigate();
+  const location = useLocation();
   
-  // Logic: Retrieve the user object we saved during Auth
   const userData = JSON.parse(localStorage.getItem('user')) || { name: 'User' };
 
+  // Logic: Map the URL path to a friendly Page Title
+  const getPageTitle = () => {
+    if (location.pathname === '/dashboard') return 'Dashboard';
+    if (location.pathname === '/analytics') return 'Financial Analytics';
+    return 'Sub-Pilot';
+  };
+
   const handleLogout = () => {
-    // Logic: Clear all traces of the session
-    localStorage.removeItem('token');a
+    localStorage.removeItem('token');
     localStorage.removeItem('user');
-    
-    // Logic: Redirect to login
     navigate('/login');
   };
 
   return (
-    <div className="flex h-screen bg-gray-50">
-      {/* Sidebar */}
-      <div className="w-64 bg-white border-r flex flex-col">
+    <div className="flex h-screen bg-gray-50 text-gray-900">
+      {/* Sidebar - Same logic as before */}
+      <aside className="w-64 bg-white border-r flex flex-col hidden lg:flex">
         <div className="p-6 border-b">
-          <h1 className="text-2xl font-bold text-blue-600 tracking-tight italic">Sub-Pilot</h1>
+           <h1 className="text-2xl font-black text-blue-600 italic">Sub-Pilot</h1>
         </div>
         
-        <nav className="flex-1 p-4 space-y-2">
-          <div className="text-xs font-semibold text-gray-400 uppercase tracking-widest px-2 mb-4">
-            Menu
-          </div>
-          <button className="w-full text-left p-3 rounded-xl bg-blue-50 text-blue-700 font-medium">
+        <nav className="flex-1 p-4 space-y-1">
+          <NavLink to="/dashboard" className={({ isActive }) => `flex items-center p-3 rounded-xl transition ${isActive ? 'bg-blue-50 text-blue-700 font-bold' : 'text-gray-500 hover:bg-gray-50'}`}>
             Dashboard
-          </button>
+          </NavLink>
+          <NavLink to="/analytics" className={({ isActive }) => `flex items-center p-3 rounded-xl transition ${isActive ? 'bg-blue-50 text-blue-700 font-bold' : 'text-gray-500 hover:bg-gray-50'}`}>
+            Analytics
+          </NavLink>
         </nav>
 
-        {/* User Profile Section at Bottom */}
-        <div className="p-4 border-t bg-gray-50">
-          <div className="flex items-center space-x-3 mb-4">
-            <div className="w-10 h-10 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold">
+        {/* User Profile */}
+        <div className="p-4 border-t">
+          <div className="flex items-center space-x-3 p-2">
+            <div className="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center text-xs font-bold">
               {userData.name.charAt(0).toUpperCase()}
             </div>
-            <div className="overflow-hidden">
-              <p className="text-sm font-bold text-gray-800 truncate">{userData.name}</p>
-              <p className="text-xs text-gray-500">Free Tier</p>
-            </div>
+            <span className="text-sm font-bold truncate">{userData.name}</span>
           </div>
-          
-          <button 
-            onClick={handleLogout}
-            className="w-full flex items-center justify-center space-x-2 p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors font-medium border border-transparent hover:border-red-100"
-          >
-            <span>Logout</span>
+          <button onClick={handleLogout} className="w-full mt-2 text-sm text-red-500 p-2 hover:bg-red-50 rounded-lg transition">
+            Logout
           </button>
         </div>
-      </div>
+      </aside>
 
-      {/* Main Content Area */}
-      <main className="flex-1 overflow-y-auto">
-        <header className="h-16 bg-white border-b flex items-center justify-between px-8 sticky top-0 z-10">
-          <span className="text-gray-500 font-medium">Overview</span>
-          <div className="text-sm text-gray-400">{new Date().toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'long' })}</div>
-        </header>
+      {/* Main Area */}
+      <div className="flex-1 flex flex-col overflow-hidden">
+        {/* Logic: Integrated the New Navbar here */}
+        <Navbar pageTitle={getPageTitle()} />
         
-        <div className="p-8">
+        <main className="flex-1 overflow-y-auto bg-gray-50 p-6 md:p-8">
           {children}
-        </div>
-      </main>
+        </main>
+      </div>
     </div>
   )
 }
