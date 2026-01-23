@@ -1,109 +1,67 @@
-import React, { useState, useEffect } from 'react';
-import axiosInstance from '../../api/axiosInstance';
+import React, { useState } from 'react';
+import Button from '../ui/Button';
+import { CATEGORIES, BTN_VARIANTS, UI_STRINGS } from '../../constants';
 
-function AddSubForm({ initialData, onSave }) {
-  const CATEGORIES = ['Entertainment', 'Utilities', 'Work', 'Health', 'Food', 'Other'];
-
-  const [formData, setFormData] = useState({ 
-    name: '', 
-    amount: '', 
-    category: 'Entertainment',
-    paymentDate: '' 
+function AddSubForm({ onSave, onCancel }) {
+  // LOGIC: Local state for the form fields
+  const [formData, setFormData] = useState({
+    name: '',
+    amount: '',
+    category: CATEGORIES[0].value, // Default to first category
   });
 
- useEffect(() => {
-  if (initialData) {
-    // Check if paymentDate exists, then chop off the time part
-    // Converts "2026-01-22T12:34:56Z" -> "2026-01-22"
-    const formattedDate = initialData.paymentDate 
-      ? new Date(initialData.paymentDate).toISOString().split('T')[0] 
-      : "";
-
-    setFormData({
-      name: initialData.name || '',
-      amount: initialData.amount || '',
-      category: initialData.category || 'Entertainment',
-      paymentDate: formattedDate // THIS IS CRITICAL
-    });
-  }
-}, [initialData]);
-
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
-    
-    try {
-      // Logic: Determine if we should POST (new) or PUT (edit)
-      if (initialData && initialData._id) {
-        console.log("Updating Subscription ID:", initialData._id);
-        
-        // Ensure the URL matches your backend: /subscriptions/:id
-        await axiosInstance.put(`/subscriptions/${initialData._id}`, formData);
-      } else {
-        console.log("Creating New Subscription");
-        await axiosInstance.post('/subscriptions', formData);
-      }
-      
-      onSave(); // Refresh dashboard and close modal
-    } catch (err) {
-      console.error("Save Operation Failed:", err.response?.data || err.message);
-      alert("Failed to save. Check console for details.");
-    }
+    // LOGIC: Validation before sending
+    if (!formData.name || !formData.amount) return alert("Please fill all fields");
+    onSave(formData);
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-5 p-2">
-      {/* ... (Your existing input fields for Name, Category, Price, Date) ... */}
-      
-      {/* Name Input */}
+    <form onSubmit={handleSubmit} className="space-y-4">
       <div>
-        <label className="text-[10px] font-black uppercase text-slate-400">Plan Name</label>
+        <label className="text-sm font-semibold text-gray-600">Service Name</label>
         <input 
-          className="w-full p-4 bg-slate-50 border rounded-2xl font-bold mt-1"
+          type="text" 
+          placeholder="e.g., Netflix"
+          className="w-full p-2 mt-1 border rounded-lg outline-none focus:ring-2 focus:ring-blue-500"
           value={formData.name}
           onChange={(e) => setFormData({...formData, name: e.target.value})}
-          required
         />
       </div>
 
-      {/* Category Toggle */}
-      <div className="flex flex-wrap gap-2">
-        {CATEGORIES.map(cat => (
-          <button
-            key={cat}
-            type="button"
-            onClick={() => setFormData({...formData, category: cat})}
-            className={`px-3 py-2 rounded-xl text-xs font-black border ${formData.category === cat ? 'bg-indigo-600 text-white' : 'bg-white text-slate-400'}`}
-          >
-            {cat}
-          </button>
-        ))}
-      </div>
-
-      {/* Amount and Date */}
-      <div className="grid grid-cols-2 gap-4">
+      <div>
+        <label className="text-sm font-semibold text-gray-600">Monthly Amount (₹)</label>
         <input 
           type="number" 
-          placeholder="Price"
-          className="p-4 bg-slate-50 border rounded-2xl font-bold"
+          placeholder="0.00"
+          className="w-full p-2 mt-1 border rounded-lg outline-none focus:ring-2 focus:ring-blue-500"
           value={formData.amount}
           onChange={(e) => setFormData({...formData, amount: e.target.value})}
-          required
-        />
-        <input 
-          type="date" 
-          className="p-4 bg-slate-50 border rounded-2xl font-bold"
-          value={formData.paymentDate}
-          onChange={(e) => setFormData({...formData, paymentDate: e.target.value})}
-          required
         />
       </div>
 
-      <button 
-        type="submit" 
-        className="w-full py-5 bg-indigo-600 text-white rounded-2xl font-black uppercase tracking-widest hover:bg-indigo-700 transition-all"
-      >
-        {initialData ? 'Update Plan Now' : 'Save New Plan'}
-      </button>
+      <div>
+        <label className="text-sm font-semibold text-gray-600">Category</label>
+        <select 
+          className="w-full p-2 mt-1 border rounded-lg outline-none bg-white"
+          value={formData.category}
+          onChange={(e) => setFormData({...formData, category: e.target.value})}
+        >
+          {CATEGORIES.map(cat => (
+            <option key={cat.id} value={cat.value}>{cat.label}</option>
+          ))}
+        </select>
+      </div>
+
+      <div className="flex gap-3 pt-4">
+        <Button variant={BTN_VARIANTS.GHOST} className="flex-1" onClick={onCancel}>
+          {UI_STRINGS.CANCEL}
+        </Button>
+        <Button type="submit" variant={BTN_VARIANTS.PRIMARY} className="flex-1">
+          {UI_STRINGS.SAVE}
+        </Button>
+      </div>
     </form>
   );
 }

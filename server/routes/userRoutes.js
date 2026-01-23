@@ -1,10 +1,10 @@
-import express from 'express';
-const router = express.Router();
-import { getProfile, updateProfile, changePassword } from '../controllers/userController.js';
-import { protect } from '../middleware/authMiddleware.js';
+import express from "express";
+import { userRegister, userLogin } from "../controllers/userController.js";
 
-router.get('/profile', protect, getProfile);
-router.put('/profile', protect, updateProfile);
-router.put('/change-password', protect, changePassword); // Add this line
+const router = express.Router();
+
+// LOGIC: Linking the URL path to the Controller function
+router.post("/register", userRegister);
+router.post("/login", userLogin);
 
 export default router;

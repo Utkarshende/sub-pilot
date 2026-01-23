@@ -1,24 +1,18 @@
-import React from 'react'
+import React from 'react';
 
-function StatCard({ title, amount, color, icon }) {
-  // Logic: Dynamic colors based on props
-  const colorClasses = {
-    blue: "bg-blue-600",
-    green: "bg-emerald-500",
-    orange: "bg-orange-500"
-  };
-
+function StatCard({ title, value, icon: Icon, colorClass }) {
   return (
-    <div className="bg-white p-6 rounded-2xl border shadow-sm flex items-center space-x-4">
-      <div className={`p-3 rounded-xl text-white ${colorClasses[color]}`}>
-        {icon}
+    <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex items-center gap-4">
+      {/* Dynamic Icon with Dynamic Background Color */}
+      <div className={`p-3 rounded-xl ${colorClass}`}>
+        <Icon size={24} />
       </div>
       <div>
         <p className="text-sm text-gray-500 font-medium uppercase tracking-wider">{title}</p>
-        <p className="text-2xl font-bold text-gray-800">₹{amount.toLocaleString()}</p>
+        <h3 className="text-2xl font-bold text-gray-800">{value}</h3>
       </div>
     </div>
-  )
+  );
 }
 
-export default StatCard
+export default StatCard;

@@ -15,7 +15,7 @@ router.get('/', async (req, res) => {
 router.post('/', async (req, res) => {
     try {
         const { name, amount, category } = req.body;
-        s
+        
         // Create new instance
         const newSub = new Subscription({
             name,
@@ -39,24 +39,6 @@ router.delete(':id',async(req,res)=>{
 response.status(500).json({message: error.message});
 }
 })
-router.put('/:id', async (req, res) => {
-  try {
-    const updatedSub = await Subscription.findByIdAndUpdate(
-      req.params.id, 
-      req.body, 
-      { new: true } // This returns the modified document rather than the original
-    );
-
-    if (!updatedSub) {
-      return res.status(404).json({ message: "Subscription not found" });
-    }
-
-    res.json(updatedSub);
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: "Server Error" });
-  }
-});
 
 // IMPORTANT: Do not forget this line!
 module.exports = router;
