@@ -6,9 +6,8 @@ const userSchema = new mongoose.Schema({
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
   photo: { type: String, default: "" },
-}, { timestamps: true }); // Logic: Automatically adds 'createdAt' and 'updatedAt'
+}, { timestamps: true }); 
 
-// LOGIC: Middleware to hash password before saving
 userSchema.pre('save', async function(next) {
   if (!this.isModified('password')) return next();
   const salt = await bcrypt.genSalt(10);
