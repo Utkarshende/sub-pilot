@@ -15,9 +15,7 @@ router.get('/', async (req, res) => {
 router.post('/', async (req, res) => {
     try {
         const { name, amount, category } = req.body;
-        
-        // Create new instance
-        const newSub = new Subscription({
+            const newSub = new Subscription({
             name,
             amount,
             category
@@ -40,5 +38,4 @@ response.status(500).json({message: error.message});
 }
 })
 
-// IMPORTANT: Do not forget this line!
 module.exports = router;
