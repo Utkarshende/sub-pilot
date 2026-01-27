@@ -1,4 +1,4 @@
-import Subscription from "../models/Subscription";
+import Subscription from "../models/Subscription.js";
 
  export const getSubs=async(req,res)=>{
   const subs = await Subscription.find({user:req.user._id});

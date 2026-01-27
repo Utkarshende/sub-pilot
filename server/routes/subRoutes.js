@@ -1,17 +1,13 @@
 import express from "express";
-import { 
-  getSubscriptions, 
-  addSubscription, 
-  deleteSubscription 
-} from "../controllers/subController.js";
+import { addSub, deleteSub,getSubs} from '../controllers/subController.js'
 import jwtCheck from "../middleware/jwtCheck.js";
 
 const router = express.Router();
 
 router.use(jwtCheck); 
 
-router.get("/", getSubscriptions);
-router.post("/", addSubscription);
-router.delete("/:id", deleteSubscription);
+router.get("/", getSubs);
+router.post("/", addSub);
+router.delete("/:id", deleteSub);
 
 export default router;

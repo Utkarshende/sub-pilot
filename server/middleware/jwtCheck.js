@@ -12,7 +12,7 @@ let token = req.headers.authorization?.split('')[1];
     next();
   } catch (err) {
     res.status(401).json({ message: "Token is not valid" });
-  }
+  }s
 };
 
 export default jwtCheck;
