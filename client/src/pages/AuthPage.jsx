@@ -16,8 +16,9 @@ const AuthPage = () => {
     const endpoint = isLogin ? '/users/login' : '/users/register';
     
     try {
-      const { data } = await API.post(endpoint, formData);
-      login(data); // Save user info to Context and LocalStorage
+     const { data } = await API.post('/users/login', formData);
+localStorage.setItem('userInfo', JSON.stringify(data));
+login(data);
     } catch (err) {
       setError(err.response?.data?.message || 'Authentication failed');
     }

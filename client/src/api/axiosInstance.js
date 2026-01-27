@@ -1,16 +1,19 @@
 import axios from 'axios';
 
+// 1. We name it 'API' here
 const API = axios.create({
   baseURL: 'http://localhost:5000/api', 
 });
 
-// Automatically add Token to every request
-API.interceptors.request.use((req) => {
+// 2. We MUST use 'API' here too
+API.interceptors.request.use((config) => {
   const userInfo = localStorage.getItem('userInfo');
   if (userInfo) {
-    req.headers.Authorization = `Bearer ${JSON.parse(userInfo).token}`;
+    const { token } = JSON.parse(userInfo);
+    config.headers.Authorization = `Bearer ${token}`;
   }
-  return req;
+  return config;
 });
 
+// 3. And export 'API'
 export default API;

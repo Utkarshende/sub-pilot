@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useContext } from 'react';
 import API from '../api/axiosInstance';
 import { AuthContext } from '../context/AuthContext';
-import { Button, Input } from '../components/UIElements';
+import { Button, Input } from '../components/UIElements.jsx';
 
 const DashboardPage = () => {
   const { logout } = useContext(AuthContext);
@@ -18,10 +18,13 @@ const DashboardPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    console.log("Current User Info:", localStorage.getItem('userInfo')); // DEBUG LINE
     await API.post('/subscriptions', form);
     setForm({ name: '', amount: '', category: 'Entertainment' });
     fetchSubs();
   };
+
+
 
   const deleteSub = async (id) => {
     await API.delete(`/subscriptions/${id}`);
