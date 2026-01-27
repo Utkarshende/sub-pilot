@@ -1,25 +1,20 @@
 import express from 'express';
 import dotenv from 'dotenv';
 import cors from 'cors';
-import connectDB from './config/db.js';
-import userLink from './routes/userRoutes.js';
-import subLink from './routes/subRoutes.js'; // Import the new routes
+import connectDB from './config/db.js'
+import subRoutes from './routes/subRoutes.js';
+import userRoutes from './routes/userRoutes.js'
 
-dotenv.config(); // Load .env file
-connectDB();    // Connect to MongoDB
+dotenv.config();
+connectDB();
+const app=express();
 
-const app = express();
+app.use(cors());
+app.use(express,json());
 
-// MIDDLEWARE
-app.use(cors()); // Logic: Allows cross-origin requests from Frontend
-app.use(express.json()); // Logic: Allows server to read JSON bodies
+app.use('/api/users', userRoutes);
+app.use('/api/subscriptions', subRoutes);
 
+const PORT = 5000;
 
-// ROUTES
-app.use('/api/users', userLink);
-// ROUTES
-app.use('/api/subscriptions', subLink);
-
-const PORT = process.env.PORT || 8080;
-app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`),
-connectDB());
+app.listen(5000, ()=> console.log(`Server running on PORT ${PORT}`))

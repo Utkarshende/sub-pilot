@@ -1,41 +1,9 @@
-const express = require('express');
-const router = express.Router();
-const Subscription = require('../models/Subscription'); // Capital 'S' for Model
+import express from "express";
+import {getSub , addSub, deleteSub} from '../controllers/subController.js';
+import {protect} from '../middleware/jwtCheck.js';
 
-router.get('/', async (req, res) => {
-    try {
-        const subs = await Subscription.find().sort({ date: -1 }); // Newest first
-        res.status(200).json(subs);
-    } catch (err) {
-        res.status(500).json({ message: "Server Error: Could not fetch data" });
-    }
-});
+const router=express.Router();
+router.route('/').get(protect, getSubs).post(protect, addSub);
+router.delete('/:id', protect, deleteSub)
 
-
-router.post('/', async (req, res) => {
-    try {
-        const { name, amount, category } = req.body;
-            const newSub = new Subscription({
-            name,
-            amount,
-            category
-        });
-
-        const savedSub = await newSub.save();
-        res.status(201).json(savedSub); // 201 = Created
-    } catch (err) {
-        res.status(400).json({ message: "Validation Error: " + err.message });
-    }
-});
-
-router.delete(':id',async(req,res)=>{
-    try{
-        const response= await Subscription.findByIdAndDelete(req.params.id);
-        res.status(200).json({message:"Delete Successfully"});
-    }
-    catch(error){
-response.status(500).json({message: error.message});
-}
-})
-
-module.exports = router;
+export default router;s
