@@ -9,10 +9,10 @@ const DashboardPage = () => {
   const [filter, setFilter] = useState('All');
   const [form, setForm] = useState({ name: '', amount: '', category: 'Entertainment' });
 
-  const fetchSubs = async () => {
-    const { data } = await API.get('/subscriptions');
-    setSubs(data);
-  };
+const fetchSubs = async () => {
+  const { data } = await API.get('/subscriptions'); 
+  setSubs(data);
+};
 
   useEffect(() => { fetchSubs(); }, []);
 
@@ -65,7 +65,7 @@ const DashboardPage = () => {
         <form onSubmit={handleSubmit} className="bg-white p-6 rounded-2xl shadow-sm flex flex-col md:flex-row gap-4 mb-10">
           <Input placeholder="Service Name" value={form.name} onChange={(e) => setForm({...form, name: e.target.value})} />
           <Input type="number" placeholder="Price" value={form.amount} onChange={(e) => setForm({...form, amount: e.target.value})} />
-          <Button type="submit">Add Sub</Button>
+          <Button type="submit" >Add Sub</Button>
         </form>
 
         {/* Results */}

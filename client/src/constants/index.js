@@ -24,7 +24,6 @@ export const ALERT_TYPES = {
   INFO: "info",
 };
 
-// 4. BUTTON STYLES (Tailwind Classes)
 export const BTN_VARIANTS = {
   PRIMARY: "bg-blue-600 text-white hover:bg-blue-700",
   DANGER: "bg-red-600 text-white hover:bg-red-700",
